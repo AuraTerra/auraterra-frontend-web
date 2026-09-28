@@ -210,7 +210,7 @@ $rolUsuario = strtolower(trim($_SESSION['user_rol'] ?? 'agricultor'));
 
     <script>
         // La URL de tu servidor PHP que procesa los datos:
-        const URL_BASE_SISTEMA = "http://localhost/auraterra-backend-api";
+        const URL_BASE_SISTEMA = "http://localhost/auraTerraMayo/auraterra-backend-api";
         const BASE_URL_PROYECTO = "/auraTerraMayo";
         const ROL_DE_SESION_ACTIVO = "<?php echo $rolUsuario; ?>";
         const NOMBRE_DE_USUARIO_SESION = "<?php echo $emailUsuario; ?>";
@@ -223,6 +223,6 @@ $rolUsuario = strtolower(trim($_SESSION['user_rol'] ?? 'agricultor'));
             document.addEventListener('click', () => { if (dm) dm.style.display = 'none'; });
         });
     </script>
-    <script src="/auraTerraMayo/public/js/dashboard.js?v=<?php echo time(); ?>"></script>
+    <script src="/auraTerraMayo/auraterra-backend-api/public/js/dashboard.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
