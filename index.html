@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AuraTerra — Acceso Institucional</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #2d3748; margin: 0; padding: 0; }
+        .hero { background: white; padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        .hero img { max-width: 220px; height: auto; display: block; margin: 0 auto; }
+        .hero p { color: #4a5568; font-style: italic; max-width: 750px; margin: 12px auto 0 auto; font-size: 1.25rem; font-weight: 500; line-height: 1.4; }
+        
+        .container { max-width: 1240px; margin: 25px auto; display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; padding: 0 20px; }
+        .card { background: white; padding: 30px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
+        
+        .badge-ecosistema { display: inline-block; padding: 6px 14px; background: #edf2f7; border-radius: 20px; font-size: 0.95rem; font-weight: 700; color: #4a5568; }
+        .titulo-seccion { font-size: 1.85rem; margin: 12px 0 16px 0; color: #1a202c; font-weight: 800; }
+        .texto-intro { font-size: 1.15rem; color: #4a5568; line-height: 1.6; margin-bottom: 18px; }
+
+        .seccion-comparativa { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 15px; }
+        .subcard-perfil { padding: 20px; border-radius: 12px; border-left: 6px solid; }
+        .subcard-agro { background: #f0fff4; border-color: #38a169; }
+        .subcard-events { background: #ebf8ff; border-color: #3182ce; }
+        .subcard-perfil h3 { margin: 0 0 10px 0; font-size: 1.35rem; font-weight: 700; }
+        .subcard-agro h3 { color: #22543d; }
+        .subcard-events h3 { color: #2b6cb0; }
+        .subcard-perfil p { margin: 0 0 8px 0; font-size: 1.05rem; color: #2d3748; line-height: 1.5; }
+        .subcard-perfil p:last-child { margin-bottom: 0; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 22px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #edf2f7; border-radius: 8px; font-weight: 700; font-size: 1.05rem; cursor: pointer; }
+        .tab-btn.active { background: #3182ce; color: white; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 1.05rem; color: #2d3748; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper input { width: 100%; padding: 13px 44px 13px 14px; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 1.05rem; box-sizing: border-box; }
+        .toggle-pwd-btn { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 1.4rem; user-select: none; }
+        
+        .recordar-box { display: flex; align-items: center; gap: 8px; margin: 12px 0 16px 0; user-select: none; cursor: pointer; }
+        .recordar-box input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #3182ce; }
+        .recordar-box label { font-size: 0.95rem; color: #4a5568; font-weight: 600; cursor: pointer; }
+
+        .pwd-strength-bar { height: 6px; background: #e2e8f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+        .pwd-strength-fill { height: 100%; width: 0%; transition: width 0.3s, background 0.3s; }
+        .pwd-rules { font-size: 0.85rem; color: #718096; margin-top: 6px; font-weight: 500; }
+
+        .btn-submit { width: 100%; background: #3182ce; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 700; font-size: 1.15rem; cursor: pointer; margin-top: 8px; }
+        .btn-submit:hover { background: #2b6cb0; }
+        
+        .modal-2fa { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 9999; }
+        .modal-2fa.active { display: flex; }
+        .modal-2fa-card { background: white; padding: 32px; border-radius: 14px; width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .input-otp { font-size: 2rem; letter-spacing: 10px; text-align: center; width: 85%; padding: 10px; border: 2px solid #3182ce; border-radius: 8px; margin: 15px auto; display: block; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <img src="./public/img/image_67422e.jpg" alt="AuraTerra Logo">
+        <p>"Los 21gr del timo que acompañan el éxito de la organización de tu actividad al aire libre"</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <span class="badge-ecosistema">Ecosistema Agroclimático</span>
+            <h2 class="titulo-seccion">Nuestros Dos Pilares de Decisión</h2>
+            <p class="texto-intro">AuraTerra integra un <b>consenso tripartito en tiempo real</b> (OpenWeatherMap + WeatherAPI + Tomorrow.io) diseñado por <b>Javier Folmer, Soledad Gareis y Tamara Godoy</b>, desacoplado en dos soluciones según tu actividad:</p>
+
+            <div class="seccion-comparativa">
+                <div class="subcard-perfil subcard-agro">
+                    <h3>🌾 AuraTerra Agro</h3>
+                    <p><b>Marco agronómico y regulatorio:</b></p>
+                    <p>• Monitoreo de viento según la <b>Ley Provincial de Fumigación</b> de Entre Ríos (7 a 15 km/h) y estándar nacional <b>INTA/BPA</b> (5 a 12 km/h).</p>
+                    <p>• Ventanas óptimas de siembra (trigo/soja/maíz) y control de deriva química.</p>
+                </div>
+                <div class="subcard-perfil subcard-events">
+                    <h3>🎪 AuraEvents Logística</h3>
+                    <p><b>Seguridad de montajes exteriores:</b></p>
+                    <p>• Resistencia estructural y límite de ráfagas para <b>carpas y gazebos</b> (alerta a >18 km/h).</p>
+                    <p>• Alerta de punto de rocío y condensación sobre equipamientos.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab-btn active" id="tabLogin" onclick="cambiarTab('login')">Iniciar Sesión</button>
+                <button class="tab-btn" id="tabRegister" onclick="cambiarTab('register')">Registrarse</button>
+            </div>
+
+            <!-- Formulario de Login -->
+            <form id="formLogin" onsubmit="iniciarLoginCon2FA(event)">
+                <div class="form-group">
+                    <label>Correo Electrónico:</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="loginEmail" required placeholder="tu-email@correo.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPassword" required placeholder="••••••••">
+                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPassword', this)">🙈</button>
+                    </div>
+                </div>
+
+                <!-- Checkbox Mantener Sesión -->
+                <div class="recordar-box">
+                    <input type="checkbox" id="checkRecordarSesion" checked>
+                    <label for="checkRecordarSesion">Mantener sesión iniciada en este dispositivo</label>
+                </div>
+
+                <button type="submit" class="btn-submit">Ingresar al Dashboard ➔</button>
+            </form>
+
+            <!-- Formulario de Registro -->
+            <form id="formRegister" style="display:none;" onsubmit="procesarRegistro(event)">
+                <div class="form-group">
+                    <label>Nombre y Apellido:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="regNombre" required placeholder="Ej: Soledad Gareis">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico:</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="regEmail" required placeholder="tu-email@correo.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña Compleja:</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="regPassword" required oninput="evaluarFuerzaContrasena(this.value)" placeholder="Ej: Clima#2026!">
+                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPassword', this)">🙈</button>
+                    </div>
+                    <div class="pwd-strength-bar"><div class="pwd-strength-fill" id="pwdBar"></div></div>
+                    <div class="pwd-rules" id="pwdRules">Mínimo 8 caracteres, 1 mayúscula, 1 número y 1 símbolo (@$!%*?&).</div>
+                </div>
+                <div class="form-group">
+                    <label>Rol Operativo:</label>
+                    <select id="regRol" style="width:100%; padding:13px; border:1.5px solid #cbd5e0; border-radius:8px; font-size:1.05rem;">
+                        <option value="agricultor">🌾 AuraTerra — Agricultor (Ley de Fumigación)</option>
+                        <option value="planificador">🎪 AuraEvents — Planificador (Seguridad Carpas)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit" style="background:#27ae60;">Crear Cuenta ➔</button>
+            </form>
+            <div id="msgAuth" style="margin-top:14px; text-align:center; font-weight:700; font-size:1.05rem;"></div>
+        </div>
+    </div>
+
+    <!-- Modal 2FA -->
+    <div class="modal-2fa" id="modal2FA">
+        <div class="modal-2fa-card">
+            <span style="font-size:2.8rem;">🔐</span>
+            <h3 style="margin:10px 0 6px 0; font-size:1.4rem;">Doble Factor (2FA)</h3>
+            <p style="font-size:0.95rem; color:#718096; margin:0;">Ingresá el código de verificación:</p>
+            <div style="background:#edf2f7; padding:10px; border-radius:8px; font-weight:800; color:#2b6cb0; margin:12px 0; font-size:1.2rem;" id="otpDemoDisplay">Código: ------</div>
+            <input type="text" class="input-otp" id="inputCodigoOTP" maxlength="6" placeholder="000000">
+            <button class="btn-submit" onclick="verificarCodigoOTP()">Verificar y Entrar ➔</button>
+            <p style="font-size:0.9rem; color:#e53e3e; margin-top:10px; display:none; font-weight:700;" id="error2FA">Código incorrecto. Reintentá.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost/auraterra-backend-api";
+        let codigoOTPGenerado = null;
+        let datosUsuarioPendientes = null;
+        let intentosFallidos2FA = 0;
+        let recordarSesionElegido = true;
+
+        // Auto-login si el usuario tildó "Mantener sesión iniciada"
+        window.addEventListener('DOMContentLoaded', () => {
+            const sesionPersistida = localStorage.getItem('usuario');
+            if (sesionPersistida) {
+                try {
+                    const u = JSON.parse(sesionPersistida);
+                    if (u && u.nombre) {
+                        window.location.href = './public/dashboard.html';
+                        return;
+                    }
+                } catch(e) {}
+            }
+        });
+
+        function cambiarTab(tab) {
+            document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+            document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('msgAuth').textContent = '';
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '👀';
+            } else {
+                input.type = 'password';
+                btn.textContent = '🙈';
+            }
+        }
+
+        function evaluarFuerzaContrasena(pwd) {
+            const bar = document.getElementById('pwdBar');
+            const rules = document.getElementById('pwdRules');
+            let fuerza = 0;
+            if (pwd.length >= 8) fuerza += 25;
+            if (/[A-Z]/.test(pwd)) fuerza += 25;
+            if (/[0-9]/.test(pwd)) fuerza += 25;
+            if (/[@$!%*?&#]/.test(pwd)) fuerza += 25;
+
+            bar.style.width = fuerza + '%';
+            if (fuerza < 50) {
+                bar.style.background = '#e53e3e';
+                rules.style.color = '#e53e3e';
+            } else if (fuerza < 100) {
+                bar.style.background = '#dd6b20';
+                rules.style.color = '#dd6b20';
+            } else {
+                bar.style.background = '#38a169';
+                rules.style.color = '#38a169';
+                rules.textContent = '✓ Contraseña segura y robusta.';
+            }
+            return fuerza === 100;
+        }
+
+        async function iniciarLoginCon2FA(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            recordarSesionElegido = document.getElementById('checkRecordarSesion').checked;
+            const msg = document.getElementById('msgAuth');
+            msg.style.color = '#3182ce'; msg.textContent = 'Validando credenciales...';
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    msg.textContent = '';
+                    datosUsuarioPendientes = data.user;
+                    intentosFallidos2FA = 0;
+                    
+                    codigoOTPGenerado = Math.floor(100000 + Math.random() * 900000).toString();
+                    document.getElementById('otpDemoDisplay').textContent = `Código de seguridad: ${codigoOTPGenerado}`;
+                    document.getElementById('modal2FA').classList.add('active');
+                    
+                    const inputOtp = document.getElementById('inputCodigoOTP');
+                    inputOtp.value = '';
+                    setTimeout(() => inputOtp.focus(), 150);
+                    inputOtp.onkeydown = (evt) => {
+                        if (evt.key === 'Enter') {
+                            evt.preventDefault();
+                            verificarCodigoOTP();
+                        }
+                    };
+                } else {
+                    msg.style.color = '#e53e3e';
+                    msg.textContent = '❌ ' + (data.message || 'Credenciales inválidas');
+                }
+            } catch(err) {
+                msg.style.color = '#e53e3e';
+                msg.textContent = '❌ Error de conexión al backend';
+            }
+        }
+
+        function verificarCodigoOTP() {
+            const ingresado = document.getElementById('inputCodigoOTP').value.trim();
+            const err = document.getElementById('error2FA');
+
+            if (ingresado === codigoOTPGenerado) {
+                const infoStr = JSON.stringify(datosUsuarioPendientes);
+                if (recordarSesionElegido) {
+                    localStorage.setItem('usuario', infoStr);
+                    sessionStorage.removeItem('usuario');
+                } else {
+                    sessionStorage.setItem('usuario', infoStr);
+                    localStorage.removeItem('usuario');
+                }
+                window.location.href = './public/dashboard.html';
+            } else {
+                intentosFallidos2FA++;
+                const restantes = 3 - intentosFallidos2FA;
+                if (intentosFallidos2FA >= 3) {
+                    alert("🚫 Seguridad Perimetral: Se ha bloqueado el acceso por superar los 3 intentos fallidos de 2FA.");
+                    window.location.href = `${API_URL}/index.php?error_suspension_manual=1`;
+                } else {
+                    err.textContent = `Código incorrecto. Te quedan ${restantes} intento(s) antes del bloqueo.`;
+                    err.style.display = 'block';
+                    document.getElementById('inputCodigoOTP').value = '';
+                    document.getElementById('inputCodigoOTP').focus();
+                }
+            }
+        }
+
+        async function procesarRegistro(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const rol = document.getElementById('regRol').value;
+            const msg = document.getElementById('msgAuth');
+
+            if (!evaluarFuerzaContrasena(password)) {
+                msg.style.color = '#e53e3e';
+                msg.textContent = '⚠️ La contraseña debe cumplir todos los requisitos de seguridad.';
+                return;
+            }
+
+            msg.style.color = '#3182ce'; msg.textContent = 'Creando cuenta...';
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, email, password, rol })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    localStorage.setItem('usuario', JSON.stringify({ nombre, email, rol }));
+                    window.location.href = './public/dashboard.html';
+                } else {
+                    msg.style.color = '#e53e3e';
+                    msg.textContent = '❌ ' + (data.message || 'Error al registrarse');
+                }
+            } catch(err) {
+                msg.style.color = '#e53e3e';
+                msg.textContent = '❌ Error de comunicación con la API';
+            }
+        }
+    </script>
+</body>
+</html>
