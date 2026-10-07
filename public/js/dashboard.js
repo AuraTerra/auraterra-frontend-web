@@ -562,5 +562,37 @@ window.addEventListener('DOMContentLoaded', () => {
         actualizarEstrellaFavorito(ciudadActualCargada);
     });
 
-    ejecutarConsultasPorNombre(ciudadActualCargada);
+    // Autodetección automática de ubicación al abrir la aplicación
+    if (navigator.geolocation) {
+        lanzarToast("🛰️ Obteniendo tu ubicación en tiempo real...");
+        mostrarEfectoCargandoDatos();
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude.toFixed(4); 
+                const lon = position.coords.longitude.toFixed(4);
+                
+                const coordDiv = document.getElementById('coordenadasActuales');
+                if (coordDiv) {
+                    coordDiv.innerHTML = `Hardware GPS: <b>Lat:</b> ${lat} | <b>Lon:</b> ${lon}`;
+                }
+                
+                // Consulta directamente con las coordenadas exactas obtenidas
+                consultarClimaActual(`${URL_BASE_SISTEMA}?ruta=/clima/actual&lat=${lat}&lon=${lon}`);
+                consultarPronostico(`${URL_BASE_SISTEMA}?ruta=/clima/pronostico&lat=${lat}&lon=${lon}`);
+            },
+            (error) => {
+                // Si el usuario rechaza los permisos o el navegador lo bloquea, usa Crespo como resguardo
+                console.warn("Geolocalización rechazada o no disponible. Cargando localidad de respaldo.");
+                ejecutarConsultasPorNombre(ciudadActualCargada);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 8000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        // En caso de navegadores antiguos sin soporte de GPS
+        ejecutarConsultasPorNombre(ciudadActualCargada);
+    }
 });
