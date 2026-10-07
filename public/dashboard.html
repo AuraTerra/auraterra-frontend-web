@@ -54,27 +54,28 @@
         .info-card-modal p { margin: 0; font-size: 0.95rem; color: #4a5568; line-height: 1.4; }
 
         @media (max-width: 900px) {
-        .buscador-inputs-row input {
-            height: 58px !important;
-            font-size: 1.25rem !important;
-            font-weight: 600 !important;
+            header { padding: 10px 14px; }
+            .eslogan-central-header { position: static; transform: none; width: 100%; order: 3; margin-top: 6px; font-size: 0.95rem; }
+            .bloque-hoy-3-columnas { grid-template-columns: 1fr; gap: 14px; }
+            .seccion-dos-columnas { grid-template-columns: 1fr; gap: 16px; }
+            .buscador-inputs-row { flex-direction: column; align-items: stretch; }
+            .buscador-inputs-row input { width: 100%; }
+            .botones-grupo-busqueda { width: 100%; }
+            #btnBuscar { flex: 1; }
+            .info-grid-modal { grid-template-columns: 1fr; }
         }
-        .buscador-inputs-row input::placeholder {
-            font-size: 1.15rem !important;
-        }
-    }
     </style>
 </head>
 <body>
     <div id="toastApp" class="toast-notificacion"></div>
-    <div class="estado-licencia-barra" id="barraEstadoLicencia">🚀 Licencia Activa — Operador: <span id="spanNombreUsuario">Administradores</span></div>
+    <div class="estado-licencia-barra" id="barraEstadoLicencia">🚀 Licencia Activa — Operador: <span id="spanNombreUsuario">Usuario</span></div>
 
     <header id="seccionCabeceraTop">
         <button class="logo-container-btn" id="btnLogoInfo">
             <img src="./img/logoAuraTerra.jpeg" class="logo-img" alt="Logo">
         </button>
         <div class="user-menu-container">
-            <div class="user-trigger" id="userTrigger">Panel: <span id="spanNombrePanel">Administradores</span> ▾</div>
+            <div class="user-trigger" id="userTrigger">Panel: <span id="spanNombrePanel">Usuario</span> ▾</div>
             <div class="dropdown-menu" id="dropdownMenu">
                 <div style="font-weight:bold; margin-bottom:8px; border-bottom:1px solid #edf2f7; padding-bottom:4px; font-size:1.05rem;">📍 Favoritos</div>
                 <div id="listaFavoritosContent"></div>
@@ -236,30 +237,33 @@
         // URL universal local con index.php incluido para garantizar funcionamiento sin .htaccess
         window.URL_BASE_SISTEMA = "http://localhost/auraterra-backend-api/index.php";
 
-        // Leer la sesión guardada
-        let sesionDataRaw = localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
-        let usuarioSesion = null;
+        // Lectura segura y estricta de la sesión
+        const sesionDataRaw = localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
+        
+        if (!sesionDataRaw) {
+            // Si no hay sesión válida, vuelve a la pantalla de login
+            window.location.href = '../index.html';
+        }
 
+        let usuarioSesion = null;
         try {
             usuarioSesion = JSON.parse(sesionDataRaw);
         } catch(e) {
-            usuarioSesion = null;
+            localStorage.removeItem('usuario');
+            sessionStorage.removeItem('usuario');
+            window.location.href = '../index.html';
         }
 
-        // Si no hay sesión o quedó guardado el texto genérico "Usuario", forzamos los datos del Admin local
-        if (!usuarioSesion || !usuarioSesion.nombre || usuarioSesion.nombre === 'Usuario') {
-            usuarioSesion = {
-                nombre: "Administradores",
-                email: "admin@auraterra.com",
-                rol: "admin",
-                estado: "activo"
-            };
-            localStorage.setItem('usuario', JSON.stringify(usuarioSesion));
+        // Si la cuenta está suspendida, se limpia y se expulsa inmediatamente
+        if (usuarioSesion && usuarioSesion.estado === 'suspendido') {
+            localStorage.removeItem('usuario');
+            sessionStorage.removeItem('usuario');
+            window.location.href = '../index.html';
         }
 
-        window.ROL_DE_SESION_ACTIVO = usuarioSesion.rol || 'admin';
-        window.NOMBRE_DE_USUARIO_SESION = usuarioSesion.nombre || 'Administradores';
-        window.ESTADO_DE_SESION = usuarioSesion.estado || 'activo';
+        window.ROL_DE_SESION_ACTIVO = usuarioSesion ? (usuarioSesion.rol || 'agricultor') : 'agricultor';
+        window.NOMBRE_DE_USUARIO_SESION = usuarioSesion ? (usuarioSesion.nombre || 'Usuario') : 'Usuario';
+        window.ESTADO_DE_SESION = usuarioSesion ? (usuarioSesion.estado || 'prueba') : 'prueba';
 
         document.addEventListener('DOMContentLoaded', () => {
             const barraLicencia = document.getElementById('barraEstadoLicencia');
@@ -284,7 +288,7 @@
                 }
             }
 
-            // Muestra la consola si el rol es admin
+            // Muestra la consola únicamente si el rol es 'admin'
             if (window.ROL_DE_SESION_ACTIVO === 'admin' && linkAdminConsole) {
                 linkAdminConsole.style.display = 'block';
             }
