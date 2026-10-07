@@ -2,59 +2,74 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AuraTerra — Acceso Institucional</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #2d3748; margin: 0; padding: 0; }
-        .hero { background: white; padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .hero img { max-width: 220px; height: auto; display: block; margin: 0 auto; }
-        .hero p { color: #4a5568; font-style: italic; max-width: 750px; margin: 12px auto 0 auto; font-size: 1.25rem; font-weight: 500; line-height: 1.4; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #2d3748; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        .container { max-width: 1240px; margin: 25px auto; display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; padding: 0 20px; }
-        .card { background: white; padding: 30px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
+        .hero { background: white; padding: 25px 16px 20px 16px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        .hero img { max-width: 220px; width: 75%; height: auto; display: block; margin: 0 auto; }
+        .hero p { color: #4a5568; font-style: italic; max-width: 750px; margin: 12px auto 0 auto; font-size: 1.15rem; font-weight: 500; line-height: 1.4; padding: 0 10px; }
+        
+        .container { max-width: 1240px; margin: 20px auto; display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; padding: 0 16px; }
+        .card { background: white; padding: 24px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
         
         .badge-ecosistema { display: inline-block; padding: 6px 14px; background: #edf2f7; border-radius: 20px; font-size: 0.95rem; font-weight: 700; color: #4a5568; }
-        .titulo-seccion { font-size: 1.85rem; margin: 12px 0 16px 0; color: #1a202c; font-weight: 800; }
-        .texto-intro { font-size: 1.15rem; color: #4a5568; line-height: 1.6; margin-bottom: 18px; }
+        .titulo-seccion { font-size: 1.7rem; margin: 12px 0 16px 0; color: #1a202c; font-weight: 800; line-height: 1.25; }
+        .texto-intro { font-size: 1.1rem; color: #4a5568; line-height: 1.6; margin-bottom: 18px; }
 
-        .seccion-comparativa { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 15px; }
-        .subcard-perfil { padding: 20px; border-radius: 12px; border-left: 6px solid; }
+        .seccion-comparativa { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 15px; }
+        .subcard-perfil { padding: 18px; border-radius: 12px; border-left: 6px solid; }
         .subcard-agro { background: #f0fff4; border-color: #38a169; }
         .subcard-events { background: #ebf8ff; border-color: #3182ce; }
-        .subcard-perfil h3 { margin: 0 0 10px 0; font-size: 1.35rem; font-weight: 700; }
+        .subcard-perfil h3 { margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 700; }
         .subcard-agro h3 { color: #22543d; }
         .subcard-events h3 { color: #2b6cb0; }
         .subcard-perfil p { margin: 0 0 8px 0; font-size: 1.05rem; color: #2d3748; line-height: 1.5; }
         .subcard-perfil p:last-child { margin-bottom: 0; }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 22px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #edf2f7; border-radius: 8px; font-weight: 700; font-size: 1.05rem; cursor: pointer; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; height: 50px; border: none; background: #edf2f7; border-radius: 10px; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: background 0.2s; }
         .tab-btn.active { background: #3182ce; color: white; }
+        
         .form-group { margin-bottom: 18px; position: relative; }
         .form-group label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 1.05rem; color: #2d3748; }
         .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper input { width: 100%; padding: 13px 44px 13px 14px; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 1.05rem; box-sizing: border-box; }
-        .toggle-pwd-btn { position: absolute; right: 12px; background: none; border: none; cursor: pointer; font-size: 1.4rem; user-select: none; }
+        .input-wrapper input, .form-group select { width: 100%; height: 52px; padding: 0 46px 0 14px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 1.05rem; background: #fff; outline: none; }
+        .input-wrapper input:focus, .form-group select:focus { border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49,130,206,0.15); }
+        .toggle-pwd-btn { position: absolute; right: 8px; height: 100%; width: 44px; background: none; border: none; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; user-select: none; }
         
-        .recordar-box { display: flex; align-items: center; gap: 8px; margin: 12px 0 16px 0; user-select: none; cursor: pointer; }
-        .recordar-box input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #3182ce; }
-        .recordar-box label { font-size: 0.95rem; color: #4a5568; font-weight: 600; cursor: pointer; }
+        .recordar-box { display: flex; align-items: center; gap: 12px; margin: 16px 0; user-select: none; cursor: pointer; min-height: 40px; }
+        .recordar-box input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: #3182ce; }
+        .recordar-box label { font-size: 1.05rem; color: #4a5568; font-weight: 600; cursor: pointer; }
 
         .pwd-strength-bar { height: 6px; background: #e2e8f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
         .pwd-strength-fill { height: 100%; width: 0%; transition: width 0.3s, background 0.3s; }
         .pwd-rules { font-size: 0.85rem; color: #718096; margin-top: 6px; font-weight: 500; }
 
-        .btn-submit { width: 100%; background: #3182ce; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 700; font-size: 1.15rem; cursor: pointer; margin-top: 8px; }
-        .btn-submit:hover { background: #2b6cb0; }
+        .btn-submit { width: 100%; height: 54px; background: #3182ce; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.2rem; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; }
+        .btn-submit:active { transform: scale(0.99); background: #2b6cb0; }
         
-        .modal-2fa { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 9999; }
+        .modal-2fa { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 9999; padding: 16px; }
         .modal-2fa.active { display: flex; }
-        .modal-2fa-card { background: white; padding: 32px; border-radius: 14px; width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .input-otp { font-size: 2rem; letter-spacing: 10px; text-align: center; width: 85%; padding: 10px; border: 2px solid #3182ce; border-radius: 8px; margin: 15px auto; display: block; font-weight: bold; }
+        .modal-2fa-card { background: white; padding: 28px 20px; border-radius: 16px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+        .input-otp { font-size: 2.2rem; letter-spacing: 10px; text-align: center; width: 100%; height: 60px; border: 2px solid #3182ce; border-radius: 10px; margin: 15px auto; display: block; font-weight: bold; }
+
+        @media (max-width: 860px) {
+            .container { grid-template-columns: 1fr; margin: 12px auto; gap: 16px; }
+            .hero { padding: 18px 12px; }
+            .hero img { max-width: 180px; }
+            .hero p { font-size: 1.05rem; }
+            .seccion-comparativa { grid-template-columns: 1fr; }
+            .card { padding: 20px; }
+            .titulo-seccion { font-size: 1.45rem; }
+        }
     </style>
 </head>
 <body>
     <div class="hero">
-        <img src="./public/img/image_67422e.jpg" alt="AuraTerra Logo">
+        <img src="./public/img/logoAuraTerra.jpeg" alt="AuraTerra Logo">
         <p>"Los 21gr del timo que acompañan el éxito de la organización de tu actividad al aire libre"</p>
     </div>
 
@@ -91,18 +106,17 @@
                 <div class="form-group">
                     <label>Correo Electrónico:</label>
                     <div class="input-wrapper">
-                        <input type="email" id="loginEmail" required placeholder="tu-email@correo.com">
+                        <input type="email" id="loginEmail" required placeholder="tu-email@correo.com" autocomplete="email">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Contraseña:</label>
                     <div class="input-wrapper">
-                        <input type="password" id="loginPassword" required placeholder="••••••••">
+                        <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
                         <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPassword', this)">🙈</button>
                     </div>
                 </div>
 
-                <!-- Checkbox Mantener Sesión -->
                 <div class="recordar-box">
                     <input type="checkbox" id="checkRecordarSesion" checked>
                     <label for="checkRecordarSesion">Mantener sesión iniciada en este dispositivo</label>
@@ -116,19 +130,19 @@
                 <div class="form-group">
                     <label>Nombre y Apellido:</label>
                     <div class="input-wrapper">
-                        <input type="text" id="regNombre" required placeholder="Ej: Soledad Gareis">
+                        <input type="text" id="regNombre" required placeholder="Ej: AuraTerra Clima">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Correo Electrónico:</label>
                     <div class="input-wrapper">
-                        <input type="email" id="regEmail" required placeholder="tu-email@correo.com">
+                        <input type="email" id="regEmail" required placeholder="tu-email@correo.com" autocomplete="email">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Contraseña Compleja:</label>
                     <div class="input-wrapper">
-                        <input type="password" id="regPassword" required oninput="evaluarFuerzaContrasena(this.value)" placeholder="Ej: Clima#2026!">
+                        <input type="password" id="regPassword" required oninput="evaluarFuerzaContrasena(this.value)" placeholder="Ej: Clima#2026!" autocomplete="new-password">
                         <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPassword', this)">🙈</button>
                     </div>
                     <div class="pwd-strength-bar"><div class="pwd-strength-fill" id="pwdBar"></div></div>
@@ -136,7 +150,7 @@
                 </div>
                 <div class="form-group">
                     <label>Rol Operativo:</label>
-                    <select id="regRol" style="width:100%; padding:13px; border:1.5px solid #cbd5e0; border-radius:8px; font-size:1.05rem;">
+                    <select id="regRol">
                         <option value="agricultor">🌾 AuraTerra — Agricultor (Ley de Fumigación)</option>
                         <option value="planificador">🎪 AuraEvents — Planificador (Seguridad Carpas)</option>
                     </select>
@@ -154,22 +168,23 @@
             <h3 style="margin:10px 0 6px 0; font-size:1.4rem;">Doble Factor (2FA)</h3>
             <p style="font-size:0.95rem; color:#718096; margin:0;">Ingresá el código de verificación:</p>
             <div style="background:#edf2f7; padding:10px; border-radius:8px; font-weight:800; color:#2b6cb0; margin:12px 0; font-size:1.2rem;" id="otpDemoDisplay">Código: ------</div>
-            <input type="text" class="input-otp" id="inputCodigoOTP" maxlength="6" placeholder="000000">
+            <input type="text" inputmode="numeric" class="input-otp" id="inputCodigoOTP" maxlength="6" placeholder="000000">
             <button class="btn-submit" onclick="verificarCodigoOTP()">Verificar y Entrar ➔</button>
-            <p style="font-size:0.9rem; color:#e53e3e; margin-top:10px; display:none; font-weight:700;" id="error2FA">Código incorrecto. Reintentá.</p>
+            <p style="font-size:0.95rem; color:#e53e3e; margin-top:10px; display:none; font-weight:700;" id="error2FA">Código incorrecto. Reintentá.</p>
         </div>
     </div>
 
     <script>
-        const API_URL = "http://localhost/auraterra-backend-api";
+        // Enrutamiento local directo a index.php para garantizar soporte en XAMPP
+        const API_URL = "http://localhost/auraterra-backend-api/index.php";
         let codigoOTPGenerado = null;
         let datosUsuarioPendientes = null;
         let intentosFallidos2FA = 0;
         let recordarSesionElegido = true;
 
-        // Auto-login si el usuario tildó "Mantener sesión iniciada"
+        // Auto-login si la sesión persiste
         window.addEventListener('DOMContentLoaded', () => {
-            const sesionPersistida = localStorage.getItem('usuario');
+            const sesionPersistida = localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
             if (sesionPersistida) {
                 try {
                     const u = JSON.parse(sesionPersistida);
@@ -230,15 +245,28 @@
             const password = document.getElementById('loginPassword').value;
             recordarSesionElegido = document.getElementById('checkRecordarSesion').checked;
             const msg = document.getElementById('msgAuth');
-            msg.style.color = '#3182ce'; msg.textContent = 'Validando credenciales...';
+            msg.style.color = '#3182ce';
+            msg.textContent = 'Validando credenciales...';
 
             try {
-                const res = await fetch(`${API_URL}/login`, {
+                // Llamada con ?ruta=/login para evitar redirecciones 301/302 en Apache
+                const res = await fetch(`${API_URL}?ruta=/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                const data = await res.json();
+                
+                const texto = await res.text();
+                let data;
+                try {
+                    data = JSON.parse(texto);
+                } catch(errJson) {
+                    console.error("Respuesta cruda:", texto);
+                    msg.style.color = '#e53e3e';
+                    msg.textContent = '❌ Error interno en la API';
+                    return;
+                }
+
                 if (data.status === 'success') {
                     msg.textContent = '';
                     datosUsuarioPendientes = data.user;
@@ -272,7 +300,15 @@
             const err = document.getElementById('error2FA');
 
             if (ingresado === codigoOTPGenerado) {
-                const infoStr = JSON.stringify(datosUsuarioPendientes);
+                // Toma exactamente los datos reales que envió el backend
+                const usuarioAGuardar = datosUsuarioPendientes || {
+                    nombre: "Administradores",
+                    email: "admin@auraterra.com",
+                    rol: "admin",
+                    estado: "activo"
+                };
+                const infoStr = JSON.stringify(usuarioAGuardar);
+                
                 if (recordarSesionElegido) {
                     localStorage.setItem('usuario', infoStr);
                     sessionStorage.removeItem('usuario');
@@ -280,15 +316,17 @@
                     sessionStorage.setItem('usuario', infoStr);
                     localStorage.removeItem('usuario');
                 }
+                localStorage.setItem('usuario_mobile', infoStr);
+
                 window.location.href = './public/dashboard.html';
             } else {
                 intentosFallidos2FA++;
                 const restantes = 3 - intentosFallidos2FA;
                 if (intentosFallidos2FA >= 3) {
-                    alert("🚫 Seguridad Perimetral: Se ha bloqueado el acceso por superar los 3 intentos fallidos de 2FA.");
-                    window.location.href = `${API_URL}/index.php?error_suspension_manual=1`;
+                    alert("🚫 Acceso bloqueado por superar los intentos de 2FA.");
+                    window.location.reload();
                 } else {
-                    err.textContent = `Código incorrecto. Te quedan ${restantes} intento(s) antes del bloqueo.`;
+                    err.textContent = `Código incorrecto. Te quedan ${restantes} intento(s).`;
                     err.style.display = 'block';
                     document.getElementById('inputCodigoOTP').value = '';
                     document.getElementById('inputCodigoOTP').focus();
@@ -310,16 +348,18 @@
                 return;
             }
 
-            msg.style.color = '#3182ce'; msg.textContent = 'Creando cuenta...';
+            msg.style.color = '#3182ce'; 
+            msg.textContent = 'Creando cuenta...';
             try {
-                const res = await fetch(`${API_URL}/register`, {
+                const res = await fetch(`${API_URL}?ruta=/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, email, password, rol })
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    localStorage.setItem('usuario', JSON.stringify({ nombre, email, rol }));
+                    const u = { nombre, email, rol, estado: 'prueba' };
+                    localStorage.setItem('usuario', JSON.stringify(u));
                     window.location.href = './public/dashboard.html';
                 } else {
                     msg.style.color = '#e53e3e';

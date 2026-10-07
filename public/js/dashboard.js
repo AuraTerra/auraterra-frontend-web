@@ -2,18 +2,18 @@ const COLORES_BASE_DIAS = ["#f7fafc", "#edf2f7", "#e2e8f0", "#cbd5e0", "#a0aec0"
 
 let ROL_DE_SESION_ACTIVO_INTERNO = (typeof window.ROL_DE_SESION_ACTIVO !== 'undefined') ? window.ROL_DE_SESION_ACTIVO : 'agricultor';
 let ciudadActualCargada = "Crespo, Entre Ríos, AR";
-var URL_BASE_SISTEMA = window.URL_BASE_SISTEMA || "http://localhost/auraterra-backend-api";
+var URL_BASE_SISTEMA = window.URL_BASE_SISTEMA || "http://localhost/auraterra-backend-api/index.php";
 
 // Registra interacciones para telemetría
 async function registrarClickTelemétrico(componente) {
     try {
-        const response = await fetch(`${URL_BASE_SISTEMA}/registrar_click`, {
+        const response = await fetch(`${URL_BASE_SISTEMA}?ruta=/registrar_click`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `componente=${encodeURIComponent(componente)}`
         });
         if (response.status === 429) {
-            window.location.href = `${URL_BASE_SISTEMA}/index.php?error_suspension_manual=1`;
+            window.location.href = `${URL_BASE_SISTEMA}?error_suspension_manual=1`;
         }
     } catch(e) { 
         console.log("Sincronización de telemetría en espera..."); 
@@ -172,15 +172,18 @@ function enclavarEscuchaTecladoEnter() {
 }
 
 function ejecutarConsultasPorNombre(nombreCiudad) { 
-    consultarClimaActual(`${URL_BASE_SISTEMA}/clima/actual?ciudad=${encodeURIComponent(nombreCiudad)}`); 
-    consultarPronostico(`${URL_BASE_SISTEMA}/clima/pronostico?ciudad=${encodeURIComponent(nombreCiudad)}`); 
+    consultarClimaActual(`${URL_BASE_SISTEMA}?ruta=/clima/actual&ciudad=${encodeURIComponent(nombreCiudad)}`); 
+    consultarPronostico(`${URL_BASE_SISTEMA}?ruta=/clima/pronostico&ciudad=${encodeURIComponent(nombreCiudad)}`); 
 }
 
-// ☀️ CLIMA ACTUAL CON LETRAS GRANDES Y PASTILLA DE CONSENSO
+// ☀️ CLIMA ACTUAL
 async function consultarClimaActual(url) {
     try {
         const response = await fetch(url); 
-        if (response.status === 429) { window.location.href = `${URL_BASE_SISTEMA}/index.php?error_suspension_manual=1`; return; }
+        if (response.status === 429) { 
+            window.location.href = `${URL_BASE_SISTEMA}?error_suspension_manual=1`; 
+            return; 
+        }
         const res = await response.json(); 
         const clima = res.data;
         const cantFuentes = clima.consenso ? clima.consenso.fuentes_consultadas : 3;
@@ -195,25 +198,26 @@ async function consultarClimaActual(url) {
             <div style="display:inline-block; padding:7px 14px; background:#ebf8ff; border:1.5px solid #bee3f8; border-radius:20px; font-size:0.95rem; color:#2b6cb0; font-weight:700;">
                 ⚡ Consenso Meteorológico Activo: ${cantFuentes} APIs (OpenWeather + WeatherAPI + Tomorrow.io)
             </div>`;
-    } catch(e){ 
+    } catch(e) { 
         console.log("Hilo de clima actual en espera de sesión..."); 
     }
 }
 
-// 📅 PRONÓSTICO EXTENDIDO CON MANEJO DE ERROR Y MOTOR AGRONÓMICO
+// 📅 PRONÓSTICO EXTENDIDO (AGRUPACIÓN EXACTA SIN DÍAS REPETIDOS)
 async function consultarPronostico(url) {
     try {
-        const response = await fetch(url);
-        if (response.status === 429) { window.location.href = `${URL_BASE_SISTEMA}/index.php?error_suspension_manual=1`; return; }
+        const response = await fetch(url); 
+        if (response.status === 429) { 
+            window.location.href = `${URL_BASE_SISTEMA}?error_suspension_manual=1`; 
+            return; 
+        }
         const res = await response.json(); 
         const lista = res.data;
         
-        // Detección geográfica territorial
         const locMinuscula = ciudadActualCargada.toLowerCase();
         const esArgentina = locMinuscula.includes("ar") || locMinuscula.includes("argentina");
         const esEntreRios = locMinuscula.includes("entre ríos") || locMinuscula.includes("entre rios");
 
-        // SI LA API NO ENCUENTRA LA CIUDAD O SE INGRESÓ UNA PROVINCIA SIN CIUDAD CABECERA
         if (!res.ok || !Array.isArray(lista) || lista.length === 0) {
             document.getElementById('bloqueExtremas24hCont').innerHTML = `
                 <div style="padding:10px 0;">
@@ -236,7 +240,6 @@ async function consultarPronostico(url) {
             return;
         }
 
-        // Si la lista de datos es válida, calcula extremos térmicos
         let tempMax = -999; let tempMin = 999; let vientoMax = 0;
         lista.slice(0, 8).forEach(b => { 
             if(b.main.temp > tempMax) tempMax = b.main.temp; 
@@ -265,7 +268,6 @@ async function consultarPronostico(url) {
                     <p style="margin:0; color:#2c5282; font-size:1.15rem; line-height:1.5;">Riesgo alto de humedad superficial nocturna en recubrimientos. Se aconseja el resguardo preventivo de equipos de audio y cableados descubiertos.</p>
                 </div>`;
         } else {
-            // Marco regulatorio dinámico
             if (esEntreRios) {
                 document.getElementById('tituloDinamicoLegal').innerText = "⚖️ Marco Legal: Ley Provincial Nº 6.599 (Entre Ríos)";
                 bLegal.innerHTML = (vKmh >= 7 && vKmh <= 15) 
@@ -301,7 +303,7 @@ async function consultarPronostico(url) {
         }
         document.getElementById('bloqueAlertas').innerHTML = htmlAlertasUnificadas;
 
-        // MÓDULO OPERATIVO / SUGERENCIAS AGRONÓMICAS COMPLETAS
+        // MÓDULO OPERATIVO / AGRONÓMICO
         const bFiltro = document.getElementById('bloqueFiltroDinamicoRol');
         if (ROL_DE_SESION_ACTIVO_INTERNO === 'planificador') {
             document.getElementById('tituloFiltroDinamicoRol').innerText = "🎪 Planificación Operativa AuraEvents";
@@ -326,7 +328,6 @@ async function consultarPronostico(url) {
                 </div>`;
 
             if (!esArgentina) {
-                // Caso: Fuera de Argentina
                 htmlSugerenciaAgro += `
                     <div style="color:#4a5568; font-size:1.15rem; line-height:1.6;">
                         <div class="tip-item-premium" style="background:#fffaf0; border-left:6px solid #dd6b20; padding:14px; border-radius:8px; margin-bottom:10px;">
@@ -340,9 +341,7 @@ async function consultarPronostico(url) {
                         </div>
                     </div>`;
             } else {
-                // Caso: Argentina (Diferenciando por campaña estacional)
                 if (mesActual >= 8 && mesActual <= 11) {
-                    // Primavera (Septiembre a Diciembre) -> Siembra Gruesa
                     htmlSugerenciaAgro += `
                         <div style="color:#4a5568; font-size:1.15rem; line-height:1.6;">
                             <div class="tip-item-premium" style="margin-bottom:8px;">
@@ -365,7 +364,6 @@ async function consultarPronostico(url) {
                             </div>
                         </div>`;
                 } else if (mesActual >= 4 && mesActual <= 7) {
-                    // Otoño/Invierno (Mayo a Agosto) -> Siembra Fina
                     htmlSugerenciaAgro += `
                         <div style="color:#4a5568; font-size:1.15rem; line-height:1.6;">
                             <div class="tip-item-premium" style="margin-bottom:8px;">
@@ -389,7 +387,6 @@ async function consultarPronostico(url) {
                             </div>
                         </div>`;
                 } else {
-                    // Verano Tardío (Enero a Abril) -> Manejo y Cobertura
                     htmlSugerenciaAgro += `
                         <div style="color:#4a5568; font-size:1.15rem; line-height:1.6;">
                             <div class="tip-item-premium" style="margin-bottom:8px;">
@@ -413,34 +410,50 @@ async function consultarPronostico(url) {
             bFiltro.innerHTML = htmlSugerenciaAgro;
         }
         
-        // Renderizado del pronóstico horario completo (24hs sin recortes)
+        // 🛠️ AGRUPACIÓN ESTRICTA POR FECHA LOCAL (Elimina la duplicación de días)
         const bPron = document.getElementById('bloquePronostico'); 
         bPron.innerHTML = ''; 
         let mapa = {}; 
+        
         lista.forEach(i => { 
-            const f = i.dt_txt.split(' ')[0]; 
-            if(!mapa[f]) mapa[f] = []; 
-            mapa[f].push(i); 
+            // Convertimos el timestamp a la fecha local del navegador
+            const dLocal = new Date(i.dt * 1000);
+            const anio = dLocal.getFullYear();
+            const mes = String(dLocal.getMonth() + 1).padStart(2, '0');
+            const dia = String(dLocal.getDate()).padStart(2, '0');
+            const claveDiaLocal = `${anio}-${mes}-${dia}`;
+
+            if(!mapa[claveDiaLocal]) mapa[claveDiaLocal] = []; 
+            mapa[claveDiaLocal].push(i); 
         });
 
-        Object.keys(mapa).slice(0,5).forEach((f, idx) => {
-            const dateObj = new Date(mapa[f][0].dt * 1000);
+        // Tomamos los primeros 5 días únicos
+        const diasUnicos = Object.keys(mapa).slice(0, 5);
+
+        diasUnicos.forEach((claveDia, idx) => {
+            const primerItem = mapa[claveDia][0];
+            const dateObj = new Date(primerItem.dt * 1000);
+            const tituloDia = dateObj.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'short' });
+
             let html = `
                 <div class="columna-dia-vertical" style="background:${COLORES_BASE_DIAS[idx]}; padding:12px; border-radius:12px; border:1px solid #cbd5e0;">
                     <h4 class="titulo-dia-vertical" style="margin:0 0 12px 0; text-align:center; color:#1a202c; text-transform:capitalize; font-size:1.25rem; font-weight:800;">
-                        ${dateObj.toLocaleDateString('es-AR', {weekday:'long', day:'numeric'})}
+                        ${tituloDia}
                     </h4>
                     <div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">`;
             
-            mapa[f].forEach(h => {
+            mapa[claveDia].forEach(h => {
                 let desc = h.weather[0].description.toLowerCase();
                 let bg = (desc.includes("claro") || desc.includes("despejado")) ? "#fef3c7" : "#ffffff";
-                let hora = h.dt_txt.split(' ')[1].substring(0,5);
+                
+                // Formateamos la hora local exacta
+                const dHora = new Date(h.dt * 1000);
+                const horaStr = dHora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
                 html += `
                     <div class="tarjeta-hora-interna" style="background:${bg}; border:1px solid #e2e8f0; margin-bottom:10px; padding:10px 12px; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.95rem; color:#4a5568; font-weight:700;">🕒 ${hora} hs</span>
+                            <span style="font-size:0.95rem; color:#4a5568; font-weight:700;">🕒 ${horaStr} hs</span>
                             <b style="font-size:1.4rem; color:#1a202c;">${Math.round(h.main.temp)}°C</b>
                         </div>
                         <div style="font-size:1rem; text-transform:capitalize; color:#2d3748; font-weight:600; margin-top:4px;">
@@ -456,7 +469,7 @@ async function consultarPronostico(url) {
         });
 
         actualizarEstrellaFavorito(ciudadActualCargada);
-    } catch(e){ 
+    } catch(e) { 
         console.log("Procesamiento pasivo de tendencias extendidas."); 
     }
 }
@@ -464,16 +477,16 @@ async function consultarPronostico(url) {
 function activarGeolocalizacionGPS() {
     registrarClickTelemétrico("Activó Localización por Hardware GPS");
     if (navigator.geolocation) {
-        lanzarToast("🛰️ Conectando con hardware GPS perimetral...");
+        lanzarToast("🛰️ Conectando con hardware GPS...");
         mostrarEfectoCargandoDatos();
         navigator.geolocation.getCurrentPosition((position) => {
             const lat = position.coords.latitude.toFixed(4); 
             const lon = position.coords.longitude.toFixed(4);
             document.getElementById('coordenadasActuales').innerHTML = `Hardware Fijo: <b>Lat:</b> ${lat} | <b>Lon:</b> ${lon}`;
-            consultarClimaActual(`${URL_BASE_SISTEMA}/clima/actual?lat=${lat}&lon=${lon}`);
-            consultarPronostico(`${URL_BASE_SISTEMA}/clima/pronostico?lat=${lat}&lon=${lon}`);
+            consultarClimaActual(`${URL_BASE_SISTEMA}?ruta=/clima/actual&lat=${lat}&lon=${lon}`);
+            consultarPronostico(`${URL_BASE_SISTEMA}?ruta=/clima/pronostico&lat=${lat}&lon=${lon}`);
         }, () => {
-            lanzarToast("⚠️ Error de hardware. Cargando Crespo por defecto.");
+            lanzarToast("⚠️ Permiso no concedido. Cargando Crespo por defecto.");
             ejecutarConsultasPorNombre(ciudadActualCargada);
         });
     }
