@@ -2,295 +2,150 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AuraTerra — Acceso Institucional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraTerra — Plataforma Agroclimatológica</title>
+    <link rel="stylesheet" href="./public/css/dashboard.css">
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; color: #2d3748; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        .hero { background: white; padding: 25px 16px 20px 16px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .hero img { max-width: 220px; width: 75%; height: auto; display: block; margin: 0 auto; }
-        .hero p { color: #4a5568; font-style: italic; max-width: 750px; margin: 12px auto 0 auto; font-size: 1.15rem; font-weight: 500; line-height: 1.4; padding: 0 10px; }
-        
-        .container { max-width: 1240px; margin: 20px auto; display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; padding: 0 16px; }
-        .card { background: white; padding: 24px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; }
-        
-        .badge-ecosistema { display: inline-block; padding: 6px 14px; background: #edf2f7; border-radius: 20px; font-size: 0.95rem; font-weight: 700; color: #4a5568; }
-        .titulo-seccion { font-size: 1.7rem; margin: 12px 0 16px 0; color: #1a202c; font-weight: 800; line-height: 1.25; }
-        .texto-intro { font-size: 1.1rem; color: #4a5568; line-height: 1.6; margin-bottom: 18px; }
-
-        .seccion-comparativa { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 15px; }
-        .subcard-perfil { padding: 18px; border-radius: 12px; border-left: 6px solid; }
-        .subcard-agro { background: #f0fff4; border-color: #38a169; }
-        .subcard-events { background: #ebf8ff; border-color: #3182ce; }
-        .subcard-perfil h3 { margin: 0 0 10px 0; font-size: 1.3rem; font-weight: 700; }
-        .subcard-agro h3 { color: #22543d; }
-        .subcard-events h3 { color: #2b6cb0; }
-        .subcard-perfil p { margin: 0 0 8px 0; font-size: 1.05rem; color: #2d3748; line-height: 1.5; }
-        .subcard-perfil p:last-child { margin-bottom: 0; }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; height: 50px; border: none; background: #edf2f7; border-radius: 10px; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: background 0.2s; }
-        .tab-btn.active { background: #3182ce; color: white; }
-        
-        .form-group { margin-bottom: 18px; position: relative; }
-        .form-group label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 1.05rem; color: #2d3748; }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper input, .form-group select { width: 100%; height: 52px; padding: 0 46px 0 14px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 1.05rem; background: #fff; outline: none; }
-        .input-wrapper input:focus, .form-group select:focus { border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49,130,206,0.15); }
-        .toggle-pwd-btn { position: absolute; right: 8px; height: 100%; width: 44px; background: none; border: none; cursor: pointer; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; user-select: none; }
-        
-        .recordar-box { display: flex; align-items: center; gap: 12px; margin: 16px 0; user-select: none; cursor: pointer; min-height: 40px; }
-        .recordar-box input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: #3182ce; }
-        .recordar-box label { font-size: 1.05rem; color: #4a5568; font-weight: 600; cursor: pointer; }
-
-        .pwd-strength-bar { height: 6px; background: #e2e8f0; border-radius: 4px; margin-top: 8px; overflow: hidden; }
-        .pwd-strength-fill { height: 100%; width: 0%; transition: width 0.3s, background 0.3s; }
-        .pwd-rules { font-size: 0.85rem; color: #718096; margin-top: 6px; font-weight: 500; }
-
-        .btn-submit { width: 100%; height: 54px; background: #3182ce; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.2rem; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; transition: transform 0.1s, background 0.2s; }
-        .btn-submit:active { transform: scale(0.99); background: #2b6cb0; }
-        
-        /* Modales */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 9999; padding: 16px; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: white; padding: 30px 24px; border-radius: 18px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 20px 30px rgba(0,0,0,0.25); animation: popModal 0.25s ease-out; }
-        @keyframes popModal { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
-        
-        .input-otp { font-size: 2.3rem; letter-spacing: 10px; text-align: center; width: 100%; height: 62px; border: 2.5px solid #3182ce; border-radius: 12px; margin: 16px 0; display: block; font-weight: bold; background: #f8fafc; outline: none; }
-        .input-otp.shake { animation: shakeError 0.35s ease-in-out; border-color: #e53e3e; }
-        @keyframes shakeError { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
-
-        .badge-alerta-2fa { background: #fff5f5; border: 1.5px solid #feb2b2; color: #c53030; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 700; margin-top: 12px; display: none; }
-
-        @media (max-width: 860px) {
-            .container { grid-template-columns: 1fr; margin: 12px auto; gap: 16px; }
-            .hero { padding: 18px 12px; }
-            .hero img { max-width: 180px; }
-            .hero p { font-size: 1.05rem; }
-            .seccion-comparativa { grid-template-columns: 1fr; }
-            .card { padding: 20px; }
-            .titulo-seccion { font-size: 1.45rem; }
-        }
+        .auth-container { max-width: 960px; margin: 40px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 20px; }
+        .hero-banner { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); text-align: center; }
+        .hero-banner img { max-width: 240px; height: auto; margin-bottom: 20px; }
+        .hero-card { text-align: left; padding: 14px 18px; border-radius: 12px; margin-top: 15px; border-left: 5px solid; }
+        .hero-agro { background: #f0fff4; border-color: #38a169; }
+        .hero-events { background: #ebf8ff; border-color: #3182ce; }
+        .auth-card { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .tabs-auth { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #e2e8f0; font-weight: 700; border-radius: 10px; cursor: pointer; font-size: 1rem; }
+        .tab-btn.active { background: #3182ce; color: #fff; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+        .form-group input, .form-group select { width: 100%; height: 46px; border-radius: 10px; border: 1.5px solid #cbd5e0; padding: 0 14px; font-size: 1rem; box-sizing: border-box; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #3182ce; }
+        .btn-submit { width: 100%; height: 48px; border-radius: 10px; border: none; background: #3182ce; color: #fff; font-size: 1.05rem; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .footer-soporte { margin-top: 25px; text-align: center; font-size: 0.9rem; color: #718096; }
+        .footer-soporte a { color: #3182ce; font-weight: 700; text-decoration: none; }
+        .modal-suspension { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; }
+        .modal-suspension.active { display: flex; }
+        .modal-suspension-box { background: #ffffff; padding: 30px; border-radius: 16px; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        @media (max-width: 768px) { .auth-container { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body>
-    <div class="hero">
-        <img src="./public/img/logoAuraTerra.jpeg" alt="AuraTerra Logo">
-    </div>
+<body style="background: #f0f4f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
 
-    <div class="container">
-        <div class="card">
-            <span class="badge-ecosistema">Ecosistema Agroclimático</span>
-            <h2 class="titulo-seccion">Nuestros Dos Pilares de Decisión</h2>
-            <p class="texto-intro">AuraTerra integra un <b>consenso tripartito en tiempo real</b> (OpenWeatherMap + WeatherAPI + Tomorrow.io) diseñado por <b>Javier Folmer, Soledad Gareis y Tamara Godoy</b>, desacoplado en dos soluciones según tu actividad:</p>
-
-            <div class="seccion-comparativa">
-                <div class="subcard-perfil subcard-agro">
-                    <h3>🌾 AuraTerra Agro</h3>
-                    <p><b>Marco agronómico y regulatorio:</b></p>
-                    <p>• Monitoreo de viento según la <b>Ley Provincial de Fumigación</b> de Entre Ríos (7 a 15 km/h) y estándar nacional <b>INTA/BPA</b> (5 a 12 km/h).</p>
-                    <p>• Ventanas óptimas de siembra (trigo/soja/maíz) y control de deriva química.</p>
-                </div>
-                <div class="subcard-perfil subcard-events">
-                    <h3>🎪 AuraEvents Logística</h3>
-                    <p><b>Seguridad de montajes exteriores:</b></p>
-                    <p>• Resistencia estructural y límite de ráfagas para <b>carpas y gazebos</b> (alerta a >18 km/h).</p>
-                    <p>• Alerta de punto de rocío y condensación sobre equipamientos.</p>
-                </div>
+    <div class="auth-container">
+        <!-- Banner Izquierdo -->
+        <div class="hero-banner">
+            <img src="./public/img/logoAuraTerra.jpeg?v=3" alt="AuraTerra Logo">
+            <div class="hero-card hero-agro">
+                <h4 style="margin: 0 0 4px 0; color: #22543d;">🌾 AuraTerra Agro</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: #2d3748;">Monitoreo fitosanitario bajo la Ley Provincial Nº 6.599 de Entre Ríos (7 a 15 km/h) y estándar INTA/BPA.</p>
+            </div>
+            <div class="hero-card hero-events">
+                <h4 style="margin: 0 0 4px 0; color: #2b6cb0;">🎪 AuraEvents Logística</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: #2d3748;">Seguridad de montajes temporales, carpas y gazebos (alerta a &gt;18 km/h) y punto de rocío.</p>
+            </div>
+            <div class="footer-soporte">
+                ¿Consultas comerciales o técnicas?<br>
+                <a href="mailto:auraterraclima@hotmail.com?subject=Contacto%20AuraTerra">✉️ Contactar Soporte (auraterraclima@hotmail.com)</a>
             </div>
         </div>
 
-        <div class="card">
-            <div class="tabs">
-                <button class="tab-btn active" id="tabLogin" onclick="cambiarTab('login')">Iniciar Sesión</button>
-                <button class="tab-btn" id="tabRegister" onclick="cambiarTab('register')">Registrarse</button>
+        <!-- Formulario Derecho -->
+        <div class="auth-card">
+            <div class="tabs-auth">
+                <button class="tab-btn active" id="tabLogin" onclick="alternarTab('login')">Iniciar Sesión</button>
+                <button class="tab-btn" id="tabRegister" onclick="alternarTab('register')">Registrarse</button>
             </div>
 
-            <!-- Formulario de Login -->
-            <form id="formLogin" onsubmit="iniciarLoginCon2FA(event)">
+            <!-- Login -->
+            <form id="formLoginWeb" onsubmit="ejecutarLoginWeb(event)">
                 <div class="form-group">
                     <label>Correo Electrónico:</label>
-                    <div class="input-wrapper">
-                        <input type="email" id="loginEmail" required placeholder="tu-email@correo.com" autocomplete="email">
-                    </div>
+                    <input type="email" id="emailLogin" required placeholder="tu-correo@ejemplo.com" autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label>Contraseña:</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
-                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPassword', this)">🙈</button>
-                    </div>
+                    <input type="password" id="passLogin" required placeholder="••••••••" autocomplete="current-password">
                 </div>
-
-                <div class="recordar-box">
-                    <input type="checkbox" id="checkRecordarSesion" checked>
-                    <label for="checkRecordarSesion">Mantener sesión iniciada en este dispositivo</label>
+                <div style="display: flex; align-items: center; gap: 8px; margin: 12px 0;">
+                    <input type="checkbox" id="checkRecordarWeb" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="checkRecordarWeb" style="margin: 0; font-size: 0.9rem; cursor: pointer; color: #4a5568;">Recordar credenciales en este equipo</label>
                 </div>
-
-                <button type="submit" id="btnSubmitLogin" class="btn-submit">Ingresar al Dashboard ➔</button>
+                <button type="submit" class="btn-submit">Ingresar al Dashboard ➔</button>
             </form>
 
-            <!-- Formulario de Registro -->
-            <form id="formRegister" style="display:none;" onsubmit="procesarRegistro(event)">
+            <!-- Registro -->
+            <form id="formRegWeb" style="display: none;" onsubmit="ejecutarRegistroWeb(event)">
                 <div class="form-group">
                     <label>Nombre y Apellido:</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="regNombre" required placeholder="Ej: AuraTerra Clima">
-                    </div>
+                    <input type="text" id="nombreReg" required placeholder="Ej: Juan Perez">
                 </div>
                 <div class="form-group">
                     <label>Correo Electrónico:</label>
-                    <div class="input-wrapper">
-                        <input type="email" id="regEmail" required placeholder="tu-email@correo.com" autocomplete="email">
-                    </div>
+                    <input type="email" id="emailReg" required placeholder="tu-correo@ejemplo.com" autocomplete="email">
                 </div>
                 <div class="form-group">
-                    <label>Contraseña Compleja:</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="regPassword" required oninput="evaluarFuerzaContrasena(this.value)" placeholder="Ej: Clima#2026!" autocomplete="new-password">
-                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPassword', this)">🙈</button>
-                    </div>
-                    <div class="pwd-strength-bar"><div class="pwd-strength-fill" id="pwdBar"></div></div>
-                    <div class="pwd-rules" id="pwdRules">Mínimo 8 caracteres, 1 mayúscula, 1 número y 1 símbolo (@$!%*?&).</div>
+                    <label>Contraseña:</label>
+                    <input type="password" id="passReg" required placeholder="Mínimo 8 caracteres" autocomplete="new-password">
                 </div>
                 <div class="form-group">
-                    <label>Rol Operativo:</label>
-                    <select id="regRol">
-                        <option value="agricultor">🌾 AuraTerra — Agricultor (Ley de Fumigación)</option>
-                        <option value="planificador">🎪 AuraEvents — Planificador (Seguridad Carpas)</option>
+                    <label>Perfil Operativo:</label>
+                    <select id="rolReg">
+                        <option value="agricultor">🌾 AuraTerra Agro (Pulverización / Siembra)</option>
+                        <option value="planificador">🎪 AuraEvents (Carpas / Eventos al Aire Libre)</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-submit" style="background:#27ae60;">Crear Cuenta ➔</button>
+                <button type="submit" class="btn-submit" style="background: #27ae60;">Crear Cuenta ➔</button>
             </form>
-            <div id="msgAuth" style="margin-top:14px; text-align:center; font-weight:700; font-size:1.05rem;"></div>
+
+            <div id="msgAuthWeb" style="margin-top: 15px; font-weight: 700; text-align: center; font-size: 0.95rem;"></div>
         </div>
     </div>
 
-    <!-- Modal 2FA Visualmente Atractivo -->
-    <div class="modal-overlay" id="modal2FA">
-        <div class="modal-card">
-            <span style="font-size:3.2rem; display:block; margin-bottom:6px;">🛡️</span>
-            <h3 style="margin:0 0 6px 0; font-size:1.5rem; color:#1a202c; font-weight:800;">Doble Factor (2FA)</h3>
-            <p style="font-size:1rem; color:#4a5568; margin:0 0 10px 0;">Ingresá el código numérico para verificar tu identidad:</p>
-            
-            <div style="background:#ebf8ff; border:1.5px solid #bee3f8; padding:12px; border-radius:12px; font-weight:800; color:#2b6cb0; margin:10px 0; font-size:1.3rem; letter-spacing:1px;" id="otpDemoDisplay">Código: ------</div>
-            
-            <input type="text" inputmode="numeric" class="input-otp" id="inputCodigoOTP" maxlength="6" placeholder="000000" autocomplete="one-time-code">
-            
-            <div id="badgeAlerta2FA" class="badge-alerta-2fa"></div>
-            
-            <button class="btn-submit" id="btnConfirmar2FA" onclick="verificarCodigoOTP()">Verificar y Acceder ➔</button>
-            <button type="button" onclick="cancelar2FA()" style="background:none; border:none; color:#718096; font-size:0.95rem; margin-top:14px; cursor:pointer; font-weight:600;">← Cancelar y volver</button>
-        </div>
-    </div>
-
-    <!-- Modal Elegante de Cuenta Suspendida -->
-    <div class="modal-overlay" id="modalSuspendida">
-        <div class="modal-card" style="border-top: 6px solid #e53e3e;">
-            <span style="font-size:3.4rem; display:block; margin-bottom:8px;">🚫</span>
-            <h3 style="margin:0 0 8px 0; font-size:1.5rem; color:#c53030; font-weight:800;">Cuenta Suspendida</h3>
-            <p style="font-size:1.05rem; color:#4a5568; line-height:1.5; margin:0 0 16px 0;" id="textoSuspendidaMensaje">
-                El período de prueba de 7 días ha finalizado para esta cuenta o ha sido inhabilitada temporalmente.
-            </p>
-            <div style="background:#f7fafc; border:1px solid #e2e8f0; padding:14px; border-radius:12px; font-size:0.95rem; color:#2d3748; margin-bottom:18px; text-align:left;">
-                📧 <b>Contacto para activación inmediata:</b><br>
-                Escríbenos a <a href="mailto:soporte@auraterra.com" style="color:#3182ce; font-weight:bold; text-decoration:none;">soporte@auraterra.com</a> con tu correo de registro para reactivar la licencia.
+    <!-- Modal Cuenta Suspendida -->
+    <div class="modal-suspension" id="modalSuspendido">
+        <div class="modal-suspension-box">
+            <span style="font-size: 3rem;">🚫</span>
+            <h3 style="color: #e53e3e; margin: 10px 0;">Cuenta Suspendida</h3>
+            <p style="color: #4a5568; line-height: 1.5; font-size: 0.95rem;">El período de prueba de 7 días ha finalizado para esta cuenta.</p>
+            <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                <p style="margin: 0; font-size: 0.9rem; color: #9b2c2c;">Para reactivar tu licencia comunícate con administración:</p>
+                <a href="mailto:auraterraclima@hotmail.com?subject=Reactivacion%20de%20Cuenta%20AuraTerra" style="display: inline-block; margin-top: 8px; font-weight: 700; color: #c53030; text-decoration: none;">✉️ auraterraclima@hotmail.com</a>
             </div>
-            <button class="btn-submit" style="background:#4a5568;" onclick="cerrarModalSuspendida()">Entendido</button>
-        </div>
-    </div>
-
-    <!-- Modal Elegante de Bloqueo por Intentos 2FA Excedidos -->
-    <div class="modal-overlay" id="modalBloqueo2FA">
-        <div class="modal-card" style="border-top: 6px solid #e53e3e;">
-            <span style="font-size:3.4rem; display:block; margin-bottom:8px;">🔒</span>
-            <h3 style="margin:0 0 8px 0; font-size:1.5rem; color:#c53030; font-weight:800;">Acceso Bloqueado</h3>
-            <p style="font-size:1.05rem; color:#4a5568; line-height:1.5; margin:0 0 18px 0;">
-                Superaste los <b>3 intentos máximos</b> permitidos para la validación de doble factor. Por seguridad, el acceso ha sido cerrado.
-            </p>
-            <button class="btn-submit" style="background:#e53e3e;" onclick="window.location.reload()">Reintentar Ingreso</button>
+            <button onclick="cerrarModalSuspension()" class="btn-submit" style="background: #718096; height: 40px;">Cerrar</button>
         </div>
     </div>
 
     <script>
-        const API_URL = "http://localhost/auraterra-backend-api/index.php";
-        let codigoOTPGenerado = null;
-        let datosUsuarioPendientes = null;
-        let intentosFallidos2FA = 0;
-        let recordarSesionElegido = true;
+        const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost/auraterra-backend-api/index.php'
+            : '/api/index.php';
 
-        // Auto-login solo si existe una sesión válida previamente guardada
-        /*window.addEventListener('DOMContentLoaded', () => {
-            const sesionPersistida = localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
-            if (sesionPersistida) {
-                try {
-                    const u = JSON.parse(sesionPersistida);
-                    if (u && u.nombre && u.estado !== 'suspendido') {
-                        window.location.href = './public/dashboard.html';
-                        return;
-                    }
-                } catch(e) {
-                    localStorage.removeItem('usuario');
-                    sessionStorage.removeItem('usuario');
-                }
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedEmail = localStorage.getItem('auraterra_remember_email');
+            const savedPass = localStorage.getItem('auraterra_remember_pass');
+            if (savedEmail && savedPass) {
+                document.getElementById('emailLogin').value = savedEmail;
+                document.getElementById('passLogin').value = savedPass;
+                document.getElementById('checkRecordarWeb').checked = true;
             }
-        });*/
+        });
 
-        function cambiarTab(tab) {
+        function alternarTab(tab) {
             document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
             document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-            document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
-            document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
-            document.getElementById('msgAuth').textContent = '';
+            document.getElementById('formLoginWeb').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('formRegWeb').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('msgAuthWeb').textContent = '';
         }
 
-        function togglePasswordVisibility(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = '👀';
-            } else {
-                input.type = 'password';
-                btn.textContent = '🙈';
-            }
-        }
-
-        function evaluarFuerzaContrasena(pwd) {
-            const bar = document.getElementById('pwdBar');
-            const rules = document.getElementById('pwdRules');
-            let fuerza = 0;
-            if (pwd.length >= 8) fuerza += 25;
-            if (/[A-Z]/.test(pwd)) fuerza += 25;
-            if (/[0-9]/.test(pwd)) fuerza += 25;
-            if (/[@$!%*?&#]/.test(pwd)) fuerza += 25;
-
-            bar.style.width = fuerza + '%';
-            if (fuerza < 50) {
-                bar.style.background = '#e53e3e';
-                rules.style.color = '#e53e3e';
-            } else if (fuerza < 100) {
-                bar.style.background = '#dd6b20';
-                rules.style.color = '#dd6b20';
-            } else {
-                bar.style.background = '#38a169';
-                rules.style.color = '#38a169';
-                rules.textContent = '✓ Contraseña segura y robusta.';
-            }
-            return fuerza === 100;
-        }
-
-        async function iniciarLoginCon2FA(e) {
+        async function ejecutarLoginWeb(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            recordarSesionElegido = document.getElementById('checkRecordarSesion').checked;
-            const msg = document.getElementById('msgAuth');
-            const btn = document.getElementById('btnSubmitLogin');
-
+            const email = document.getElementById('emailLogin').value.trim();
+            const password = document.getElementById('passLogin').value;
+            const recordar = document.getElementById('checkRecordarWeb').checked;
+            const msg = document.getElementById('msgAuthWeb');
             msg.style.color = '#3182ce';
-            msg.textContent = 'Validando credenciales...';
-            btn.disabled = true;
+            msg.textContent = 'Verificando credenciales...';
 
             try {
                 const res = await fetch(`${API_URL}?ruta=/login`, {
@@ -298,132 +153,45 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                
-                const texto = await res.text();
-                btn.disabled = false;
-                let data;
-                try {
-                    data = JSON.parse(texto);
-                } catch(errJson) {
-                    msg.style.color = '#e53e3e';
-                    msg.textContent = '❌ Error de comunicación con el servidor.';
-                    return;
-                }
+                const data = await res.json();
 
-                // CASO 1: CUENTA SUSPENDIDA (Bloqueo inmediato y aviso claro)
                 if (res.status === 403 || data.status === 'suspended') {
                     msg.textContent = '';
-                    if (data.message) {
-                        document.getElementById('textoSuspendidaMensaje').innerText = data.message;
-                    }
-                    document.getElementById('modalSuspendida').classList.add('active');
+                    document.getElementById('modalSuspendido').classList.add('active');
                     return;
                 }
 
-                // CASO 2: CREDENCIALES INCORRECTAS (No permite ingresar)
-                if (data.status !== 'success' || !data.user) {
+                if (data.status === 'success' && data.user) {
+                    if (recordar) {
+                        localStorage.setItem('auraterra_remember_email', email);
+                        localStorage.setItem('auraterra_remember_pass', password);
+                    } else {
+                        localStorage.removeItem('auraterra_remember_email');
+                        localStorage.removeItem('auraterra_remember_pass');
+                    }
+                    localStorage.setItem('usuario_web', JSON.stringify(data.user));
+                    localStorage.setItem('usuario', JSON.stringify(data.user));
+                    window.location.href = './public/dashboard.html';
+                } else {
                     msg.style.color = '#e53e3e';
-                    msg.textContent = '❌ ' + (data.message || 'Credenciales inválidas. Verifica tu correo y contraseña.');
-                    return;
+                    msg.textContent = '❌ ' + (data.message || 'Credenciales inválidas.');
                 }
-
-                // CASO 3: CREDENCIALES VÁLIDAS -> AVANZAR A 2FA
-                msg.textContent = '';
-                datosUsuarioPendientes = data.user;
-                intentosFallidos2FA = 0;
-                
-                codigoOTPGenerado = Math.floor(100000 + Math.random() * 900000).toString();
-                document.getElementById('otpDemoDisplay').textContent = `Código: ${codigoOTPGenerado}`;
-                
-                const badge2FA = document.getElementById('badgeAlerta2FA');
-                badge2FA.style.display = 'none';
-                
-                const inputOtp = document.getElementById('inputCodigoOTP');
-                inputOtp.classList.remove('shake');
-                inputOtp.value = '';
-                
-                document.getElementById('modal2FA').classList.add('active');
-                setTimeout(() => inputOtp.focus(), 150);
-                
-                inputOtp.onkeydown = (evt) => {
-                    if (evt.key === 'Enter') {
-                        evt.preventDefault();
-                        verificarCodigoOTP();
-                    }
-                };
-
             } catch(err) {
-                btn.disabled = false;
                 msg.style.color = '#e53e3e';
-                msg.textContent = '❌ Error de conexión con la base de datos local.';
+                msg.textContent = '❌ Error de comunicación con el servidor.';
             }
         }
 
-        function verificarCodigoOTP() {
-            const inputOtp = document.getElementById('inputCodigoOTP');
-            const ingresado = inputOtp.value.trim();
-            const badge2FA = document.getElementById('badgeAlerta2FA');
-
-            if (ingresado === codigoOTPGenerado) {
-                // Al validar 2FA, guardamos ÚNICAMENTE el usuario autenticado
-                const infoStr = JSON.stringify(datosUsuarioPendientes);
-                
-                if (recordarSesionElegido) {
-                    localStorage.setItem('usuario', infoStr);
-                    sessionStorage.removeItem('usuario');
-                } else {
-                    sessionStorage.setItem('usuario', infoStr);
-                    localStorage.removeItem('usuario');
-                }
-                localStorage.setItem('usuario_mobile', infoStr);
-
-                window.location.href = './public/dashboard.html';
-            } else {
-                intentosFallidos2FA++;
-                const restantes = 3 - intentosFallidos2FA;
-                
-                // Efecto de vibración
-                inputOtp.classList.add('shake');
-                setTimeout(() => inputOtp.classList.remove('shake'), 400);
-
-                if (intentosFallidos2FA >= 3) {
-                    document.getElementById('modal2FA').classList.remove('active');
-                    document.getElementById('modalBloqueo2FA').classList.add('active');
-                } else {
-                    badge2FA.style.display = 'block';
-                    badge2FA.innerHTML = `⚠️ Código incorrecto. Te ${restantes === 1 ? 'queda' : 'quedan'} <b>${restantes} intento${restantes === 1 ? '' : 's'}</b>.`;
-                    inputOtp.value = '';
-                    inputOtp.focus();
-                }
-            }
-        }
-
-        function cancelar2FA() {
-            document.getElementById('modal2FA').classList.remove('active');
-            datosUsuarioPendientes = null;
-            codigoOTPGenerado = null;
-        }
-
-        function cerrarModalSuspendida() {
-            document.getElementById('modalSuspendida').classList.remove('active');
-        }
-
-        async function procesarRegistro(e) {
+        async function ejecutarRegistroWeb(e) {
             e.preventDefault();
-            const nombre = document.getElementById('regNombre').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const rol = document.getElementById('regRol').value;
-            const msg = document.getElementById('msgAuth');
-
-            if (!evaluarFuerzaContrasena(password)) {
-                msg.style.color = '#e53e3e';
-                msg.textContent = '⚠️ La contraseña debe cumplir todos los requisitos de seguridad.';
-                return;
-            }
-
-            msg.style.color = '#3182ce'; 
+            const nombre = document.getElementById('nombreReg').value.trim();
+            const email = document.getElementById('emailReg').value.trim();
+            const password = document.getElementById('passReg').value;
+            const rol = document.getElementById('rolReg').value;
+            const msg = document.getElementById('msgAuthWeb');
+            msg.style.color = '#3182ce';
             msg.textContent = 'Creando cuenta...';
+
             try {
                 const res = await fetch(`${API_URL}?ruta=/register`, {
                     method: 'POST',
@@ -433,16 +201,21 @@
                 const data = await res.json();
                 if (data.status === 'success') {
                     const u = { nombre, email, rol, estado: 'prueba' };
+                    localStorage.setItem('usuario_web', JSON.stringify(u));
                     localStorage.setItem('usuario', JSON.stringify(u));
                     window.location.href = './public/dashboard.html';
                 } else {
                     msg.style.color = '#e53e3e';
-                    msg.textContent = '❌ ' + (data.message || 'Error al registrarse');
+                    msg.textContent = '❌ ' + (data.message || 'No se pudo crear la cuenta.');
                 }
             } catch(err) {
                 msg.style.color = '#e53e3e';
-                msg.textContent = '❌ Error de comunicación con la API';
+                msg.textContent = '❌ Error de red al registrar.';
             }
+        }
+
+        function cerrarModalSuspension() {
+            document.getElementById('modalSuspendido').classList.remove('active');
         }
     </script>
 </body>
