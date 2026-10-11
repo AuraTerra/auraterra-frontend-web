@@ -2,447 +2,752 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - AuraTerra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraTerra — Panel Operativo</title>
+    <link rel="stylesheet" href="./css/dashboard.css">
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #2d3748; margin: 0; padding: 0; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-        
-        .estado-licencia-barra { background-color: #27ae60; color: white; text-align: center; padding: 10px 14px; font-weight: bold; font-size: 1rem; transition: background-color 0.3s ease; }
-        .toast-notificacion { display: none; background-color: #2d3748; color: white; padding: 14px 20px; position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 420px; margin: auto; z-index: 999999; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.25); font-weight: 600; border-left: 5px solid #27ae60; text-align: center; }
-        
-        header { background-color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.04); position: relative; gap: 10px; flex-wrap: wrap; }
-        .logo-container-btn { background: none; border: none; cursor: pointer; padding: 0; display: inline-flex; align-items: center; outline: none; z-index: 10; }
-        .logo-img { width: 150px; height: auto; object-fit: contain; }
-        .eslogan-central-header { position: absolute; left: 50%; transform: translateX(-50%); font-style: italic; color: #718096; font-size: 1.05rem; font-weight: 500; text-align: center; max-width: 550px; line-height: 1.3; pointer-events: none !important; user-select: none; }
-        
-        .user-menu-container { position: relative; z-index: 10; margin-left: auto; }
-        .user-trigger { cursor: pointer; font-weight: 700; font-size: 1.05rem; padding: 10px 18px; background: #edf2f7; border-radius: 20px; user-select: none; display: inline-block; white-space: nowrap; height: 46px; line-height: 26px; }
-        .dropdown-menu { display: none; position: absolute; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.18); border-radius: 12px; padding: 16px; right: 0; top: 52px; z-index: 100000; min-width: 250px; border: 1px solid #e2e8f0; }
-        
-        .container { max-width: 1440px; margin: 0 auto; padding: 16px; }
-        .buscador-box { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .buscador-inputs-row { display: flex; gap: 10px; align-items: center; width: 100%; flex-wrap: wrap; }
-        .buscador-inputs-row input { flex: 1; min-width: 200px; padding: 0 16px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 1.05rem; background-color: #f8fafc; height: 52px; outline: none; }
-        
-        .botones-grupo-busqueda { display: flex; gap: 8px; flex-shrink: 0; }
-        #btnBuscar { background: #3182ce; color: white; border: none; padding: 0 24px; height: 52px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1rem; white-space: nowrap; }
-        #btnGps, #btnFav { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer; border-radius: 10px; border: 1.5px solid #cbd5e0; background: #fff; }
-        
-        .bloque-hoy-3-columnas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; align-items: stretch; margin-bottom: 12px; }
-        .card { background: white; padding: 22px; border-radius: 14px; border: 1px solid #edf2f7; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        .card h3 { margin-top: 0; margin-bottom: 14px; font-size: 1.35rem; color: #1a202c; border-bottom: 2px solid #edf2f7; padding-bottom: 8px; font-weight: 800; }
-        .texto-agrandado-legible { font-size: 1.2rem !important; line-height: 1.6 !important; color: #2d3748; }
-        
-        .contenedor-scroll-dias { width: 100%; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
-        .grid-cinco-columnas-dias { display: grid; grid-template-columns: repeat(5, minmax(230px, 1fr)); gap: 14px; margin-top: 12px; }
-        
-        .divisor-navegacion-interactivo { width: 100%; text-align: center; margin: 15px 0 20px 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #3182ce; font-weight: bold; font-size: 1.15rem; user-select: none; }
-        .divisor-navegacion-interactivo .flecha-animada { font-size: 1.6rem; animation: bounceFlecha 1.5s infinite; }
-        @keyframes bounceFlecha { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
-        
-        .seccion-dos-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-        .modal-alert-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(30, 41, 59, 0.55); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 999999; padding: 12px; }
-        .modal-alert-overlay.show { display: flex; }
-        .modal-alert-card { background: white; padding: 24px 18px; border-radius: 16px; width: 100%; max-width: 740px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px rgba(0,0,0,0.25); text-align: left; }
-        .input-modal-premium { width: 100%; height: 50px; padding: 0 14px; border: 2px solid #cbd5e0; border-radius: 10px; font-size: 1.05rem; margin: 12px 0; outline: none; }
-        .btn-modal-confirm { background: #3182ce; color: white; height: 50px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 1.1rem; }
-        .info-grid-modal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-        .info-card-modal { background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid #3182ce; }
-        .info-card-modal h4 { margin: 0 0 8px 0; color: #2c5282; font-size: 1.1rem; }
-        .info-card-modal p { margin: 0; font-size: 0.95rem; color: #4a5568; line-height: 1.4; }
-
-        @media (max-width: 900px) {
-            header { padding: 10px 14px; }
-            .eslogan-central-header { position: static; transform: none; width: 100%; order: 3; margin-top: 6px; font-size: 0.95rem; }
-            .bloque-hoy-3-columnas { grid-template-columns: 1fr; gap: 14px; }
-            .seccion-dos-columnas { grid-template-columns: 1fr; gap: 16px; }
-            .buscador-inputs-row { flex-direction: column; align-items: stretch; }
-            .buscador-inputs-row input { width: 100%; }
-            .botones-grupo-busqueda { width: 100%; }
-            #btnBuscar { flex: 1; }
-            .info-grid-modal { grid-template-columns: 1fr; }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+            border-bottom: 1px solid #edf2f7;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .brand-logo-img {
+            height: 85px !important;
+            max-height: 85px !important;
+            width: auto !important;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+        .brand-logo-img:hover {
+            transform: scale(1.03);
+        }
+        .header-center-slogan {
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .header-slogan-text {
+            font-size: 1.05rem;
+            color: #4a5568;
+            font-style: italic;
+            font-weight: 500;
+            margin: 0 auto;
+            max-width: 580px;
+            line-height: 1.4;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .btn-soporte-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1.5px solid #bee3f8;
+            transition: background 0.15s ease;
+        }
+        .btn-soporte-link:hover {
+            background: #bee3f8;
+        }
+        .user-menu-wrapper {
+            position: relative;
+        }
+        .user-menu-btn {
+            background: #f7fafc;
+            border: 1.5px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #2d3748;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-dropdown-panel {
+            display: none;
+            position: absolute;
+            top: 52px;
+            right: 0;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+            border: 1px solid #e2e8f0;
+            width: 320px;
+            padding: 16px;
+            z-index: 9999;
+            text-align: left;
+        }
+        .user-dropdown-panel.activo {
+            display: block;
+        }
+        .fav-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 0.92rem;
+        }
+        .btn-logout-head {
+            padding: 10px 18px;
+            background: #e53e3e;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .btn-logout-head:hover {
+            background: #c53030;
+        }
+        .search-section-wrap {
+            max-width: 1240px;
+            margin: 24px auto 0 auto;
+            padding: 0 20px;
+        }
+        .search-bar-inner {
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .search-bar-inner input {
+            flex: 1;
+            height: 52px;
+            border-radius: 12px;
+            border: 2px solid #cbd5e0;
+            padding: 0 18px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2d3748;
+            outline: none;
+        }
+        .search-bar-inner input:focus {
+            border-color: #3182ce;
+        }
+        .btn-consultar-web {
+            height: 52px;
+            padding: 0 28px;
+            background: #3182ce;
+            color: #ffffff;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            cursor: pointer;
+        }
+        .btn-icon-sq {
+            height: 52px;
+            width: 52px;
+            background: #f7fafc;
+            border: 1.5px solid #cbd5e0;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dashboard-container {
+            max-width: 1240px;
+            margin: 22px auto 40px auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .hero-cards-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 22px;
+        }
+        .panel-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+            border: 1px solid #edf2f7;
+        }
+        .consensus-pill-tag {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 0.88rem;
+        }
+        .metrics-boxes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+        .metric-cell {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .dir-viento-badge {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+        .days-forecast-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+        .day-forecast-item {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .day-forecast-item:hover {
+            transform: translateY(-2px);
+        }
+        .hours-slider-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .hour-block-cell {
+            min-width: 135px;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .modal-info-layer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-info-layer.activa {
+            display: flex;
+        }
+        .modal-info-window {
+            background: #ffffff;
+            border-radius: 18px;
+            max-width: 540px;
+            width: 90%;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+        @media (max-width: 960px) {
+            .hero-cards-split { grid-template-columns: 1fr; }
+            .days-forecast-row { grid-template-columns: repeat(2, 1fr); }
+            .header-center-slogan { display: none; }
         }
     </style>
 </head>
-<body>
-    <div id="toastApp" class="toast-notificacion"></div>
-    <div class="estado-licencia-barra" id="barraEstadoLicencia">🚀 Licencia Activa — Operador: <span id="spanNombreUsuario">Usuario</span></div>
+<body style="background: #f0f4f8; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #2d3748;">
 
-    <header id="seccionCabeceraTop">
-        <button class="logo-container-btn" id="btnLogoInfo">
-            <img src="./img/logoAuraTerra.jpeg" class="logo-img" alt="Logo">
-        </button>
-        <div class="user-menu-container">
-            <div class="user-trigger" id="userTrigger">Panel: <span id="spanNombrePanel">Usuario</span> ▾</div>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <div style="font-weight:bold; margin-bottom:8px; border-bottom:1px solid #edf2f7; padding-bottom:4px; font-size:1.05rem;">📍 Favoritos</div>
-                <div id="listaFavoritosContent"></div>
-                <a href="#" id="linkAdminConsole" style="display: none; color: #3182ce; font-weight: bold; padding: 10px 0; text-decoration: none; font-size: 1.05rem; border-top: 1px solid #edf2f7; margin-top: 5px;">⚙️ Consola Especial Admin</a>
-                <a href="#" id="btnCerrarSesion" style="color:#e53e3e; text-decoration:none; display:block; margin-top:10px; font-weight:bold; border-top:1px solid #edf2f7; padding-top:10px; font-size:1.05rem;">Cerrar Sesión</a>
-            </div>
+    <!-- 1. Header con Logo, Eslogan Centrado y Acciones -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="#" onclick="abrirModalInstitucional(event)" title="Conocer más sobre AuraTerra">
+                <img src="./img/logoAuraTerra.jpeg?v=6" alt="AuraTerra Logo" class="brand-logo-img">
+            </a>
         </div>
-        <div class="eslogan-central-header">"Los 21gr del timo que acompañan el éxito de la organización de tu actividad al aire libre"</div>
+
+        <div class="header-center-slogan">
+            <p class="header-slogan-text">
+                "Los 21gr del timo que acompañan el éxito de la organización de tu actividad al aire libre"
+            </p>
+        </div>
+
+        <div class="header-right">
+            <a href="mailto:auraterraclima@hotmail.com?subject=Contacto%20y%20Soporte%20AuraTerra" class="btn-soporte-link">
+                ✉️ Contacto y Soporte
+            </a>
+
+            <!-- Menú Desplegable del Usuario -->
+            <div class="user-menu-wrapper">
+                <button class="user-menu-btn" onclick="toggleMenuUsuario()">
+                    👤 <span id="lblHeaderNombre">Usuario</span>
+                    <span id="lblHeaderRol" style="background:#e2e8f0; padding:2px 8px; border-radius:10px; font-size:0.8rem; color:#4a5568;">Cargando...</span>
+                    ▾
+                </button>
+
+                <div class="user-dropdown-panel" id="dropdownUsuario">
+                    <div style="font-size:0.85rem; font-weight:800; color:#718096; margin-bottom:6px;">✏️ PERFIL DE USUARIO</div>
+                    <div style="display:flex; gap:6px; margin-bottom:12px;">
+                        <input type="text" id="inputEditarNombre" placeholder="Tu nombre" style="flex:1; height:36px; padding:0 10px; border-radius:6px; border:1px solid #cbd5e0; font-size:0.9rem;">
+                        <button onclick="guardarNombreUsuario()" style="background:#3182ce; color:#fff; border:none; border-radius:6px; padding:0 12px; font-weight:700; cursor:pointer;">Guardar</button>
+                    </div>
+
+                    <div style="font-size:0.85rem; font-weight:800; color:#718096; margin-bottom:6px;">⭐ MIS CIUDADES FAVORITAS</div>
+                    <div id="listaFavoritosDropdown" style="max-height:160px; overflow-y:auto; margin-bottom:12px;"></div>
+
+                    <div style="display:flex; gap:6px; margin-bottom:14px;">
+                        <input type="text" id="inputNuevoFavorito" placeholder="Nueva ciudad..." style="flex:1; height:34px; padding:0 8px; border-radius:6px; border:1px solid #cbd5e0; font-size:0.85rem;">
+                        <button onclick="agregarFavoritoManual()" style="background:#27ae60; color:#fff; border:none; border-radius:6px; padding:0 10px; font-weight:700; cursor:pointer; font-size:0.85rem;">+ Agregar</button>
+                    </div>
+
+                    <button id="btnAdminAcceso" onclick="abrirModalAdmin()" style="display:none; width:100%; height:36px; background:#2b6cb0; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-bottom:8px;">
+                        ⚙️ Consola Admin
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="cerrarSesionWeb()" class="btn-logout-head">
+                Salir
+            </button>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="buscador-box">
-            <div class="buscador-inputs-row">
-                <input type="text" id="inputCiudad" placeholder="Ej: Crespo, Entre Ríos, AR">
-                <div class="botones-grupo-busqueda">
-                    <button id="btnBuscar">Consultar Clima</button>
-                    <button id="btnGps" title="Ubicación Actual">📍</button>
-                    <button id="btnFav" title="Guardar Favorito">★</button>
-                </div>
-            </div>
-            <div id="coordenadasActuales" style="margin-top: 10px; font-size: 0.95rem; color:#718096;"></div>
-        </div>
+    <!-- 2. Barra de Búsqueda con Predictivo Completo de Todas las Provincias y Ciudades Argentinas -->
+    <div class="search-section-wrap">
+        <div class="search-bar-inner">
+            <span style="font-size: 1.35rem;">🔍</span>
+            <input 
+                type="text" 
+                id="inputCiudad" 
+                list="datalistProvinciasArg" 
+                placeholder="Formato requerido: Ciudad, Provincia, AR" 
+                value="Crespo, Entre Ríos, AR"
+            >
+            <datalist id="datalistProvinciasArg">
+                <!-- ENTRE RÍOS -->
+                <option value="Crespo, Entre Ríos, AR">
+                <option value="Paraná, Entre Ríos, AR">
+                <option value="Concordia, Entre Ríos, AR">
+                <option value="Gualeguaychú, Entre Ríos, AR">
+                <option value="Concepción del Uruguay, Entre Ríos, AR">
+                <option value="Gualeguay, Entre Ríos, AR">
+                <option value="Villaguay, Entre Ríos, AR">
+                <option value="Chajarí, Entre Ríos, AR">
+                <option value="Victoria, Entre Ríos, AR">
+                <option value="La Paz, Entre Ríos, AR">
+                <option value="Nogoyá, Entre Ríos, AR">
+                <option value="Colón, Entre Ríos, AR">
+                <option value="Diamante, Entre Ríos, AR">
+                <option value="Santa Elena, Entre Ríos, AR">
+                <option value="Federal, Entre Ríos, AR">
+                <option value="Rosario del Tala, Entre Ríos, AR">
+                <option value="San Salvador, Entre Ríos, AR">
+                <option value="San José de Feliciano, Entre Ríos, AR">
+                <option value="Viale, Entre Ríos, AR">
+                <option value="Seguí, Entre Ríos, AR">
+                <option value="Ramírez, Entre Ríos, AR">
+                <option value="Bovril, Entre Ríos, AR">
+                <option value="Urdinarrain, Entre Ríos, AR">
 
-        <div class="bloque-hoy-3-columnas" id="seccionClimaHoyPrincipal">
-            <div class="card" id="cardActual"><h3>Condiciones Actuales</h3><div id="bloqueActual"><p style="color:#718096; font-size:1.1rem;">Sincronizando...</p></div></div>
-            <div class="card" id="cardControlTermicoMini"><h3>Control Térmico (24hs)</h3><div id="bloqueExtremas24hCont"><p style="color:#718096; font-size:1.1rem;">Evaluando extremos...</p></div></div>
-            <div class="card" id="cardLegalFumigacion"><h3 id="tituloDinamicoLegal">Análisis de Operaciones</h3><div id="bloqueLegalFumigacion"><p style="color:#718096; font-size:1.1rem;">Evaluando vientos...</p></div></div>
-        </div>
+                <!-- BUENOS AIRES Y CABA -->
+                <option value="Buenos Aires, CABA, AR">
+                <option value="La Plata, Buenos Aires, AR">
+                <option value="Mar del Plata, Buenos Aires, AR">
+                <option value="Bahía Blanca, Buenos Aires, AR">
+                <option value="Tandil, Buenos Aires, AR">
+                <option value="Pergamino, Buenos Aires, AR">
+                <option value="Junín, Buenos Aires, AR">
+                <option value="San Nicolás de los Arroyos, Buenos Aires, AR">
+                <option value="Olavarría, Buenos Aires, AR">
+                <option value="Campana, Buenos Aires, AR">
+                <option value="Zárate, Buenos Aires, AR">
+                <option value="Necochea, Buenos Aires, AR">
+                <option value="Chivilcoy, Buenos Aires, AR">
+                <option value="Azul, Buenos Aires, AR">
+                <option value="Mercedes, Buenos Aires, AR">
+                <option value="Trenque Lauquen, Buenos Aires, AR">
+                <option value="Chascomús, Buenos Aires, AR">
 
-        <div class="divisor-navegacion-interactivo" onclick="document.getElementById('seccionBloquesInformacionCard').scrollIntoView({behavior:'smooth'});">
-            <span>Presioná acá para pasar al siguiente bloque de información</span>
-            <span class="flecha-animada">🔽</span>
-        </div>
+                <!-- SANTA FE -->
+                <option value="Santa Fe, Santa Fe, AR">
+                <option value="Rosario, Santa Fe, AR">
+                <option value="Rafaela, Santa Fe, AR">
+                <option value="Venado Tuerto, Santa Fe, AR">
+                <option value="Reconquista, Santa Fe, AR">
+                <option value="Santo Tomé, Santa Fe, AR">
+                <option value="Esperanza, Santa Fe, AR">
+                <option value="Villa Gobernador Gálvez, Santa Fe, AR">
+                <option value="San Lorenzo, Santa Fe, AR">
+                <option value="Cañada de Gómez, Santa Fe, AR">
+                <option value="Casilda, Santa Fe, AR">
+                <option value="Sunchales, Santa Fe, AR">
 
-        <div class="card" id="cardPronosticoCardMaster" style="margin-bottom: 25px;">
-            <h3>Tendencias (Próximos 5 Días)</h3>
-            <div class="contenedor-scroll-dias">
-                <div class="grid-cinco-columnas-dias" id="bloquePronostico"><p style="grid-column: span 5; text-align:center; font-size:1.1rem;">Cargando cuadrícula...</p></div>
-            </div>
-        </div>
+                <!-- CÓRDOBA -->
+                <option value="Córdoba, Córdoba, AR">
+                <option value="Río Cuarto, Córdoba, AR">
+                <option value="Villa María, Córdoba, AR">
+                <option value="San Francisco, Córdoba, AR">
+                <option value="Villa Carlos Paz, Córdoba, AR">
+                <option value="Río Tercero, Córdoba, AR">
+                <option value="Alta Gracia, Córdoba, AR">
+                <option value="Bell Ville, Córdoba, AR">
+                <option value="Cruz del Eje, Córdoba, AR">
+                <option value="Villa Dolores, Córdoba, AR">
+                <option value="Jesús María, Córdoba, AR">
+                <option value="Marcos Juárez, Córdoba, AR">
+                <option value="Laboulaye, Córdoba, AR">
 
-        <div class="seccion-dos-columnas" id="seccionBloquesInformacionCard">
-            <div class="card" style="border-left: 5px solid #dd6b20;">
-                <h3>🛡️ Gestión Predictiva de Riesgos (72hs) y Monitoreo Unificado</h3>
-                <div id="bloqueAlertas" class="texto-agrandado-legible"><p style="color:#718096;">Mapeando alertas...</p></div>
-            </div>
-            <div class="card" id="cardFiltroDinamicoRol" style="border-left: 5px solid #3182ce;">
-                <h3 id="tituloFiltroDinamicoRol">Módulo Operativo / Planificación Sugerida</h3>
-                <div id="bloqueFiltroDinamicoRol" class="texto-agrandado-legible"><p style="color:#718096;">Calculando ciclos regionales...</p></div>
-                <div id="bloqueSecundarioRol" style="margin-top:15px;"></div>
-            </div>
+                <!-- CORRIENTES -->
+                <option value="Corrientes, Corrientes, AR">
+                <option value="Goya, Corrientes, AR">
+                <option value="Paso de los Libres, Corrientes, AR">
+                <option value="Curuzú Cuatiá, Corrientes, AR">
+                <option value="Mercedes, Corrientes, AR">
+                <option value="Bella Vista, Corrientes, AR">
+                <option value="Monte Caseros, Corrientes, AR">
+                <option value="Santo Tomé, Corrientes, AR">
+                <option value="Ituzaingó, Corrientes, AR">
+
+                <!-- MISIONES -->
+                <option value="Posadas, Misiones, AR">
+                <option value="Oberá, Misiones, AR">
+                <option value="Eldorado, Misiones, AR">
+                <option value="Puerto Iguazú, Misiones, AR">
+                <option value="Apóstoles, Misiones, AR">
+                <option value="Leandro N. Alem, Misiones, AR">
+
+                <!-- CHACO -->
+                <option value="Resistencia, Chaco, AR">
+                <option value="Presidencia Roque Sáenz Peña, Chaco, AR">
+                <option value="Villa Ángela, Chaco, AR">
+                <option value="Charata, Chaco, AR">
+                <option value="General San Martín, Chaco, AR">
+                <option value="Juan José Castelli, Chaco, AR">
+
+                <!-- FORMOSA -->
+                <option value="Formosa, Formosa, AR">
+                <option value="Clorinda, Formosa, AR">
+                <option value="Pirané, Formosa, AR">
+                <option value="El Colorado, Formosa, AR">
+
+                <!-- SANTIAGO DEL ESTERO -->
+                <option value="Santiago del Estero, Santiago del Estero, AR">
+                <option value="La Banda, Santiago del Estero, AR">
+                <option value="Termas de Río Hondo, Santiago del Estero, AR">
+                <option value="Frías, Santiago del Estero, AR">
+                <option value="Añatuya, Santiago del Estero, AR">
+
+                <!-- TUCUMÁN -->
+                <option value="San Miguel de Tucumán, Tucumán, AR">
+                <option value="Tafí Viejo, Tucumán, AR">
+                <option value="Concepción, Tucumán, AR">
+                <option value="Yerba Buena, Tucumán, AR">
+                <option value="Aguilares, Tucumán, AR">
+                <option value="Monteros, Tucumán, AR">
+
+                <!-- SALTA -->
+                <option value="Salta, Salta, AR">
+                <option value="San Ramón de la Nueva Orán, Salta, AR">
+                <option value="Tartagal, Salta, AR">
+                <option value="General Güemes, Salta, AR">
+                <option value="San José de Metán, Salta, AR">
+                <option value="Cafayate, Salta, AR">
+
+                <!-- JUJUY -->
+                <option value="San Salvador de Jujuy, Jujuy, AR">
+                <option value="San Pedro de Jujuy, Jujuy, AR">
+                <option value="Palpalá, Jujuy, AR">
+                <option value="Libertador General San Martín, Jujuy, AR">
+                <option value="Perico, Jujuy, AR">
+                <option value="Humahuaca, Jujuy, AR">
+
+                <!-- CATAMARCA -->
+                <option value="San Fernando del Valle de Catamarca, Catamarca, AR">
+                <option value="Andalgalá, Catamarca, AR">
+                <option value="Belén, Catamarca, AR">
+                <option value="Santa María, Catamarca, AR">
+                <option value="Tinogasta, Catamarca, AR">
+
+                <!-- LA RIOJA -->
+                <option value="La Rioja, La Rioja, AR">
+                <option value="Chilecito, La Rioja, AR">
+                <option value="Aimogasta, La Rioja, AR">
+                <option value="Chamical, La Rioja, AR">
+                <option value="Chepes, La Rioja, AR">
+
+                <!-- SAN JUAN -->
+                <option value="San Juan, San Juan, AR">
+                <option value="Rawson, San Juan, AR">
+                <option value="Rivadavia, San Juan, AR">
+                <option value="Chimbas, San Juan, AR">
+                <option value="Caucete, San Juan, AR">
+                <option value="Jáchal, San Juan, AR">
+
+                <!-- MENDOZA -->
+                <option value="Mendoza, Mendoza, AR">
+                <option value="San Rafael, Mendoza, AR">
+                <option value="Godoy Cruz, Mendoza, AR">
+                <option value="Las Heras, Mendoza, AR">
+                <option value="Guaymallén, Mendoza, AR">
+                <option value="San Martín, Mendoza, AR">
+                <option value="Luján de Cuyo, Mendoza, AR">
+                <option value="Maipú, Mendoza, AR">
+                <option value="Malargüe, Mendoza, AR">
+                <option value="General Alvear, Mendoza, AR">
+                <option value="Tunuyán, Mendoza, AR">
+
+                <!-- SAN LUIS -->
+                <option value="San Luis, San Luis, AR">
+                <option value="Villa Mercedes, San Luis, AR">
+                <option value="Merlo, San Luis, AR">
+                <option value="La Punta, San Luis, AR">
+
+                <!-- LA PAMPA -->
+                <option value="Santa Rosa, La Pampa, AR">
+                <option value="General Pico, La Pampa, AR">
+                <option value="General Acha, La Pampa, AR">
+                <option value="Eduardo Castex, La Pampa, AR">
+
+                <!-- NEUQUÉN -->
+                <option value="Neuquén, Neuquén, AR">
+                <option value="Cutral Có, Neuquén, AR">
+                <option value="Plaza Huincul, Neuquén, AR">
+                <option value="Zapala, Neuquén, AR">
+                <option value="San Martín de los Andes, Neuquén, AR">
+                <option value="Centenario, Neuquén, AR">
+
+                <!-- RÍO NEGRO -->
+                <option value="Viedma, Río Negro, AR">
+                <option value="San Carlos de Bariloche, Río Negro, AR">
+                <option value="General Roca, Río Negro, AR">
+                <option value="Cipolletti, Río Negro, AR">
+                <option value="Villa Regina, Río Negro, AR">
+                <option value="Catriel, Río Negro, AR">
+
+                <!-- CHUBUT -->
+                <option value="Rawson, Chubut, AR">
+                <option value="Comodoro Rivadavia, Chubut, AR">
+                <option value="Trelew, Chubut, AR">
+                <option value="Puerto Madryn, Chubut, AR">
+                <option value="Esquel, Chubut, AR">
+
+                <!-- SANTA CRUZ -->
+                <option value="Río Gallegos, Santa Cruz, AR">
+                <option value="Caleta Olivia, Santa Cruz, AR">
+                <option value="Pico Truncado, Santa Cruz, AR">
+                <option value="El Calafate, Santa Cruz, AR">
+                <option value="Puerto Deseado, Santa Cruz, AR">
+
+                <!-- TIERRA DEL FUEGO -->
+                <option value="Ushuaia, Tierra del Fuego, AR">
+                <option value="Río Grande, Tierra del Fuego, AR">
+                <option value="Tolhuin, Tierra del Fuego, AR">
+            </datalist>
+
+            <button onclick="buscarClimaWeb()" class="btn-consultar-web">Consultar</button>
+            <button onclick="obtenerUbicacionGps()" class="btn-icon-sq" title="Ubicación GPS actual">📍</button>
+            <button onclick="alternarFavoritoActual()" class="btn-icon-sq" title="Guardar ciudad actual como favorita">⭐</button>
         </div>
     </div>
 
-    <!-- Modales -->
-    <div class="modal-alert-overlay" id="modalInfoCorporativo">
-        <div class="modal-alert-card">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <img src="./img/logoAuraTerra.jpeg" style="width: 140px; height: auto;" alt="Logo">
-                <h2 style="color:#2b6cb0; margin: 10px 0 5px 0;">AuraTerra</h2>
-            </div>
-            <div class="info-grid-modal">
-                <div class="info-card-modal">
-                    <h4>👥 Quiénes Somos</h4>
-                    <p>Somos una plataforma de ingeniería agroclimatológica en Entre Ríos, fundada por <b>Javier Folmer, Soledad Gareis y Tamara Godoy</b>.</p>
+    <!-- 3. Dashboard Container -->
+    <main class="dashboard-container">
+        <div class="hero-cards-split">
+            <!-- Tarjeta Clima Actual -->
+            <section class="panel-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <div>
+                        <h2 id="lblCiudadActual" style="margin:0; font-size:1.5rem; color:#1a202c;">📍 Crespo, Entre Ríos, AR</h2>
+                        <span id="lblFechaActual" style="color:#718096; font-size:0.95rem; text-transform:capitalize;">Sincronizando...</span>
+                    </div>
+                    <span id="lblConsensoBadge" class="consensus-pill-tag">Consenso: 3 APIs en vivo</span>
                 </div>
-                <div class="info-card-modal">
-                    <h4>⚙️ Cómo funciona</h4>
-                    <p>Procesamos un modelo de consenso tripartito en tiempo real (OpenWeatherMap + WeatherAPI + Tomorrow.io) con marcos normativos provinciales y nacionales.</p>
-                </div>
-            </div>
-            <div class="info-card-modal" style="margin-top:20px; width:100%; border-left-color:#27ae60;">
-                <h4>🚀 Qué Nos Diferencia del Resto</h4>
-                <p>Transformamos analíticas crudas atmosféricas en marcos de decisión operativos personalizados de forma directa por rol de usuario activo, blindando tus montajes perimetrales y siembras zonales.</p>
-            </div>
-            <button id="btnCerrarModalInfo" class="btn-modal-confirm">Volver al Panel Técnico ⬅</button>
-        </div>
-    </div>
 
-    <!-- Modal Consola de Administrador con Gestión de Usuarios -->
-    <div class="modal-alert-overlay" id="modalConsolaAdmin">
-        <div class="modal-alert-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #edf2f7; padding-bottom:10px; margin-bottom:15px;">
-                <h3 style="margin:0; color:#2b6cb0; font-size:1.35rem;">⚙️ Auditoría, Telemetría y Cuentas</h3>
-                <button id="btnCerrarAdminConsole" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">❌</button>
-            </div>
-            
-            <h4 style="margin:12px 0 6px 0; color:#1a202c; font-size:1.15rem;">👥 Gestión de Cuentas y Estado de Suscripción</h4>
-            <p style="margin:0 0 10px 0; font-size:0.9rem; color:#718096;">Periodo de evaluación: <b>7 días</b>. Luego del plazo, la cuenta se suspende automáticamente hasta activar el plan.</p>
-            
-            <div style="overflow-x: auto; background:#fff; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:20px;">
-                <table style="width:100%; border-collapse:collapse; font-size:0.95rem; text-align:left; min-width: 580px;">
-                    <thead>
-                        <tr style="background:#f7fafc; border-bottom:2px solid #e2e8f0; color:#4a5568;">
-                            <th style="padding:10px;">Usuario</th>
-                            <th style="padding:10px;">Email</th>
-                            <th style="padding:10px;">Rol</th>
-                            <th style="padding:10px;">Estado</th>
-                            <th style="padding:10px;">Prueba</th>
-                            <th style="padding:10px; text-align:center;">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaUsuariosAdminBody">
-                        <tr><td colspan="6" style="padding:15px; text-align:center; color:#718096;">Cargando usuarios...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr; gap:15px;">
-                <div>
-                    <h4 style="margin:0 0 6px 0; color:#2d3748; font-size:1.15rem;">📊 Ranking Más Consultadas</h4>
-                    <div id="rankingConsultasBox" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:1rem; min-height:100px;">
-                        Cargando métricas...
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0 16px 0; border-bottom:1px solid #edf2f7;">
+                    <div style="font-size:4.8rem; font-weight:800; color:#1a202c; line-height:1;" id="lblTemperatura">--°C</div>
+                    <div style="text-align:right;">
+                        <div id="lblDescripcion" style="font-size:1.45rem; font-weight:700; color:#3182ce; text-transform:capitalize;">Cargando...</div>
                     </div>
                 </div>
-                <div>
-                    <h4 style="margin:0 0 6px 0; color:#2d3748; font-size:1.15rem;">🕒 Últimos Eventos (Historial Completo)</h4>
-                    <div id="ultimosEventosBox" style="max-height:280px; overflow-y:auto; font-size:0.95rem; border:1px solid #e2e8f0; border-radius:8px; padding:10px; background:#fff;">
-                        Cargando registros...
+
+                <div class="metrics-boxes-grid">
+                    <div class="metric-cell">
+                        <span style="color:#718096; font-weight:600;">💧 Humedad</span>
+                        <b id="lblHumedad" style="color:#2d3748; font-size:1.05rem;">--%</b>
+                    </div>
+                    <div class="metric-cell">
+                        <span style="color:#718096; font-weight:600;">💨 Viento</span>
+                        <b id="lblViento" style="color:#2d3748; font-size:1.05rem;">-- km/h</b>
+                    </div>
+                    <div class="metric-cell">
+                        <span style="color:#718096; font-weight:600;">🧭 Dirección</span>
+                        <span id="lblDireccionViento" class="dir-viento-badge">SE ↘️</span>
+                    </div>
+                    <div class="metric-cell">
+                        <span style="color:#718096; font-weight:600;">⏲️ Presión</span>
+                        <b id="lblPresion" style="color:#2d3748; font-size:1.05rem;">-- hPa</b>
+                    </div>
+                    <div class="metric-cell">
+                        <span style="color:#718096; font-weight:600;">👁️ Visibilidad</span>
+                        <b id="lblVisibilidad" style="color:#2d3748; font-size:1.05rem;">-- km</b>
+                    </div>
+                    <div class="metric-cell">
+                        <span style="color:#718096; font-weight:600;">🌡️ Sensación</span>
+                        <b id="lblSensacion" style="color:#2d3748; font-size:1.05rem;">--°C</b>
                     </div>
                 </div>
+            </section>
+
+            <!-- Tarjeta Evaluación Normativa -->
+            <section class="panel-card" id="cardEvaluacionLegal" style="border-left: 6px solid #38a169; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 id="lblTituloLegal" style="margin:0; font-size:1.25rem; color:#2d3748;">Seguridad de Montajes y Gazebos</h3>
+                        <span id="lblBadgeJurisdiccion" style="background:#edf2f7; padding:4px 10px; border-radius:10px; font-weight:700; font-size:0.82rem; color:#4a5568;">AuraEvents Logística</span>
+                    </div>
+                    <div id="lblCuerpoLegal" style="font-size:0.98rem; line-height:1.55; color:#4a5568;">
+                        Analizando condiciones de viento y factores de riesgo ambiental...
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Pronóstico de los Próximos 5 Días -->
+        <section class="panel-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; font-size:1.3rem; color:#2d3748;">📅 Pronóstico de los Próximos 5 Días</h3>
+                <small style="color:#718096; font-weight:600;">Toca cualquier día para desplegar sus intervalos de 3 horas abajo</small>
+            </div>
+            <div id="contenedorPronostico5Dias" class="days-forecast-row"></div>
+        </section>
+
+        <!-- Intervalos Horarios de 3 Horas -->
+        <section class="panel-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 id="lblTituloHorario" style="margin:0; font-size:1.25rem; color:#2d3748;">🕒 Intervalos Horarios (Cada 3 Horas)</h3>
+                <small id="lblSubtituloHorario" style="color:#718096;">Fondo coloreado según escala de temperatura</small>
+            </div>
+            <div id="contenedorHorasTermicas" class="hours-slider-row"></div>
+        </section>
+
+        <!-- Recomendaciones Operativas -->
+        <section class="panel-card">
+            <h3 id="lblTituloModuloRol" style="margin:0 0 12px 0; font-size:1.25rem; color:#2d3748;">🌱 Recomendaciones Operativas</h3>
+            <div id="lblCuerpoModuloRol"></div>
+        </section>
+    </main>
+
+    <!-- Modal Formato Inválido de Búsqueda -->
+    <div id="modalFormatoInvalido" class="modal-info-layer">
+        <div class="modal-info-window" style="max-width: 480px;">
+            <div style="font-size: 3rem; margin-bottom: 8px;">⚠️</div>
+            <h2 style="color: #e53e3e; margin: 0 0 10px 0; font-size: 1.35rem;">Formato de Ubicación Inválido</h2>
+            <p style="color: #4a5568; line-height: 1.5; font-size: 0.95rem; margin-bottom: 14px;">
+                Para garantizar la precisión de las 3 APIs y no consultar ubicaciones ambiguas, debes ingresar <b>Ciudad, Provincia, País</b>.
+            </p>
+            <div style="background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 10px; padding: 12px; margin-bottom: 18px; text-align: left; font-size: 0.92rem; color: #2b6cb0;">
+                <b>Ejemplos válidos:</b><br>
+                • <code>Córdoba, Córdoba, AR</code><br>
+                • <code>Crespo, Entre Ríos, AR</code><br>
+                • <code>Rosario, Santa Fe, AR</code>
+            </div>
+            <button onclick="cerrarModalFormatoInvalido()" style="width: 100%; height: 46px; background: #3182ce; color: #fff; font-weight: 700; border: none; border-radius: 10px; cursor: pointer;">
+                Entendido, corregir búsqueda
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Quiénes Somos -->
+    <div id="modalQuienesSomos" class="modal-info-layer">
+        <div class="modal-info-window">
+            <img src="./img/logoAuraTerra.jpeg?v=6" alt="Logo AuraTerra" style="max-width: 150px; margin: 0 auto 14px auto; display: block; border-radius: 8px;">
+            <p style="font-style: italic; color: #718096; margin-bottom: 14px; font-size: 0.95rem;">
+                "Los 21gr del timo que acompañan el éxito de la organización de tu actividad al aire libre"
+            </p>
+            <div style="background: #f8fafc; border-left: 4px solid #3182ce; padding: 12px; border-radius: 8px; text-align: left; margin-bottom: 10px;">
+                <h4 style="margin: 0 0 4px 0; color: #2d3748;">👥 Equipo Fundador:</h4>
+                <p style="margin: 0; color: #4a5568; font-size: 0.95rem;"><b>Javier Folmer</b> • <b>Soledad Gareis</b> • <b>Tamara Godoy</b></p>
+            </div>
+            <div style="background: #f8fafc; border-left: 4px solid #38a169; padding: 12px; border-radius: 8px; text-align: left; margin-bottom: 18px;">
+                <h4 style="margin: 0 0 4px 0; color: #22543d;">⚙️ Modelo de Consenso:</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: #4a5568; line-height: 1.45;">
+                    Consenso meteorológico tripartito de alta resolución procesado bajo la <b>Ley Provincial Nº 6.599</b> de Entre Ríos y directivas nacionales <b>INTA/BPA</b>.
+                </p>
+            </div>
+            <button onclick="cerrarModalInstitucional()" style="padding: 10px 24px; background: #3182ce; color: #ffffff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                Entendido ⬅
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Admin con Selector de Cambio de Estado y Botón de Cierre Destacado -->
+    <div id="modalAdmin" class="modal-info-layer" onclick="if(event.target === this) cerrarModalAdmin()">
+        <div class="modal-info-window" style="max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto; text-align: left; padding: 26px 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); border-radius: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 2px solid #edf2f7; padding-bottom: 12px;">
+                <h2 style="margin: 0; color: #2b6cb0; font-size: 1.45rem; font-weight: 800;">
+                    ⚙️ Consola Admin y Telemetría
+                </h2>
+                <button type="button" onclick="cerrarModalAdmin()" style="background: #edf2f7; border: 1.5px solid #cbd5e0; border-radius: 10px; width: 42px; height: 42px; font-size: 1.3rem; cursor: pointer;" title="Cerrar modal">
+                    ❌
+                </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 22px;">
+                <div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #1a202c;">👥 Gestión de Usuarios y Licencias</h3>
+                    <div id="listaUsuariosAdmin" style="max-height: 290px; overflow-y: auto; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 1.05rem; background: #ffffff;">Cargando usuarios...</div>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #1a202c;">📊 Ranking de Clics</h3>
+                    <div id="rankingClicksAdmin" style="max-height: 290px; overflow-y: auto; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 1.02rem; color: #2d3748;">Cargando ranking...</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #1a202c;">🕒 Últimos 50 Eventos Registrados</h3>
+                <div id="ultimosClicksAdmin" style="max-height: 200px; overflow-y: auto; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 0.98rem; background: #ffffff; color: #2d3748;">Cargando auditoría...</div>
+            </div>
+
+            <div style="text-align: right; border-top: 2px solid #edf2f7; padding-top: 14px;">
+                <button type="button" onclick="cerrarModalAdmin()" style="padding: 10px 24px; background: #718096; color: #ffffff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">
+                    Cerrar Consola
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="modal-alert-overlay" id="modalAgregarAliasFav">
-        <div class="modal-alert-card">
-            <h3>⭐ Asignar Alias Favorito</h3>
-            <p style="color:#718096; font-size:0.95rem; margin-bottom:10px;">Ingresá una etiqueta descriptiva para este lote:</p>
-            <input type="text" id="inputModalAlias" class="input-modal-premium" placeholder="Ej: Mi Campo Principal">
-            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
-                <button id="btnCancelarAlias" style="background:#e2e8f0; color:#4a5568; height:46px; padding:0 18px; border-radius:8px; border:none; cursor:pointer; font-weight:600;">Cancelar</button>
-                <button id="btnConfirmarAlias" style="background:#3182ce; color:white; height:46px; padding:0 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700;">Guardar Marcador</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalErrorBuscador" class="modal-alert-overlay">
-        <div class="modal-alert-card" style="text-align:center;">
-            <h3 style="color:#e53e3e; margin-top:0;">⚠️ Formato de Búsqueda Inválido</h3>
-            <p style="color:#4a5568; line-height:1.5; text-align:left;">Por favor, ingrese la localidad respetando la estructura obligatoria de tres términos separados por comas:<br><br><b>Ciudad, Provincia, País</b><br><br><i>Ejemplo: Crespo, Entre Ríos, AR</i></p>
-            <button id="btnCerrarModalError" style="background:#e53e3e; width:100%; color:white; border:none; height:48px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:1.05rem;">Entendido</button>
-        </div>
-    </div>
-
-    <div class="modal-alert-overlay" id="modalEditarAliasFav">
-        <div class="modal-alert-card">
-            <h3>📝 Renombrar Alias de Favorito</h3>
-            <p style="color:#718096; font-size:0.95rem; margin-bottom:10px;">Modificá el nombre identificatorio de esta localidad guardada:</p>
-            <input type="text" id="inputModalEditarAlias" class="input-modal-premium">
-            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
-                <button onclick="document.getElementById('modalEditarAliasFav').classList.remove('show')" style="background:#e2e8f0; color:#4a5568; height:46px; padding:0 18px; border-radius:8px; border:none; cursor:pointer; font-weight:600;">Cancelar</button>
-                <button id="btnConfirmarEditarAlias" style="background:#27ae60; color:white; height:46px; padding:0 18px; border-radius:8px; border:none; cursor:pointer; font-weight:700;">Actualizar Nombre</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // URL universal local con index.php incluido para garantizar funcionamiento sin .htaccess
-        window.URL_BASE_SISTEMA = "http://localhost/auraterra-backend-api/index.php";
-
-        // Lectura segura y estricta de la sesión
-        const sesionDataRaw = localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
-        
-        if (!sesionDataRaw) {
-            // Si no hay sesión válida, vuelve a la pantalla de login
-            window.location.href = '../index.html';
-        }
-
-        let usuarioSesion = null;
-        try {
-            usuarioSesion = JSON.parse(sesionDataRaw);
-        } catch(e) {
-            localStorage.removeItem('usuario');
-            sessionStorage.removeItem('usuario');
-            window.location.href = '../index.html';
-        }
-
-        // Si la cuenta está suspendida, se limpia y se expulsa inmediatamente
-        if (usuarioSesion && usuarioSesion.estado === 'suspendido') {
-            localStorage.removeItem('usuario');
-            sessionStorage.removeItem('usuario');
-            window.location.href = '../index.html';
-        }
-
-        window.ROL_DE_SESION_ACTIVO = usuarioSesion ? (usuarioSesion.rol || 'agricultor') : 'agricultor';
-        window.NOMBRE_DE_USUARIO_SESION = usuarioSesion ? (usuarioSesion.nombre || 'Usuario') : 'Usuario';
-        window.ESTADO_DE_SESION = usuarioSesion ? (usuarioSesion.estado || 'prueba') : 'prueba';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const barraLicencia = document.getElementById('barraEstadoLicencia');
-            const spanNombreUsuario = document.getElementById('spanNombreUsuario');
-            const spanNombrePanel = document.getElementById('spanNombrePanel');
-            const linkAdminConsole = document.getElementById('linkAdminConsole');
-
-            if (spanNombreUsuario) spanNombreUsuario.textContent = window.NOMBRE_DE_USUARIO_SESION;
-            if (spanNombrePanel) spanNombrePanel.textContent = window.NOMBRE_DE_USUARIO_SESION;
-
-            // Actualización dinámica de la barra de licencia
-            if (barraLicencia) {
-                if (window.ESTADO_DE_SESION === 'prueba') {
-                    barraLicencia.style.backgroundColor = '#dd6b20';
-                    barraLicencia.innerHTML = `🟠 Modo de Evaluación (Prueba de 7 Días) — Operador: <span>${window.NOMBRE_DE_USUARIO_SESION}</span>`;
-                } else if (window.ESTADO_DE_SESION === 'suspendido') {
-                    barraLicencia.style.backgroundColor = '#e53e3e';
-                    barraLicencia.innerHTML = `🚫 Cuenta Suspendida (Periodo Expirado) — Operador: <span>${window.NOMBRE_DE_USUARIO_SESION}</span>`;
-                } else {
-                    barraLicencia.style.backgroundColor = '#27ae60';
-                    barraLicencia.innerHTML = `🚀 Licencia Activa — Operador: <span>${window.NOMBRE_DE_USUARIO_SESION}</span>`;
-                }
-            }
-
-            // Muestra la consola únicamente si el rol es 'admin'
-            if (window.ROL_DE_SESION_ACTIVO === 'admin' && linkAdminConsole) {
-                linkAdminConsole.style.display = 'block';
-            }
-
-            const ut = document.getElementById('userTrigger');
-            const dm = document.getElementById('dropdownMenu');
-            if (ut && dm) {
-                ut.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    dm.style.display = (dm.style.display === 'block') ? 'none' : 'block';
-                });
-            }
-            document.addEventListener('click', () => { if (dm) dm.style.display = 'none'; });
-
-            // Consola Especial Admin
-            const linkAdmin = document.getElementById('linkAdminConsole');
-            const modalAdmin = document.getElementById('modalConsolaAdmin');
-            const btnCerrarAdmin = document.getElementById('btnCerrarAdminConsole');
-
-            async function cargarDatosConsolaAdmin() {
-                const tbody = document.getElementById('tablaUsuariosAdminBody');
-                const boxRank = document.getElementById('rankingConsultasBox');
-                const boxEventos = document.getElementById('ultimosEventosBox');
-
-                try {
-                    const res = await fetch(`${window.URL_BASE_SISTEMA}?ruta=/admin/telemetria`);
-                    const data = await res.json();
-
-                    if (data.status !== "ok") {
-                        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:#e53e3e;">⚠️ Error: ${data.message || 'No se pudo cargar la telemetría'}</td></tr>`;
-                        return;
-                    }
-                    
-                    if (data.usuarios && data.usuarios.length > 0) {
-                        tbody.innerHTML = '';
-                        data.usuarios.forEach(u => {
-                            let badgeColor = '#27ae60';
-                            let badgeTxt = 'Activa';
-                            if (u.estado === 'prueba') {
-                                badgeColor = '#dd6b20';
-                                badgeTxt = 'Prueba';
-                            } else if (u.estado === 'suspendido') {
-                                badgeColor = '#e53e3e';
-                                badgeTxt = 'Suspendida';
-                            }
-
-                            let infoDias = (u.estado === 'prueba') 
-                                ? `⏳ <b>${u.dias_restantes}d</b> restantes` 
-                                : (u.estado === 'activo' ? '✓ Ilimitado' : '🚫 Expirado');
-
-                            tbody.innerHTML += `
-                                <tr style="border-bottom:1px solid #edf2f7;">
-                                    <td style="padding:10px; font-weight:700;">${u.nombre}</td>
-                                    <td style="padding:10px; color:#4a5568;">${u.email}</td>
-                                    <td style="padding:10px; text-transform:capitalize;">${u.rol}</td>
-                                    <td style="padding:10px;">
-                                        <span style="background:${badgeColor}20; color:${badgeColor}; padding:3px 9px; border-radius:12px; font-weight:700; font-size:0.85rem; border:1px solid ${badgeColor};">
-                                            ${badgeTxt}
-                                        </span>
-                                    </td>
-                                    <td style="padding:10px; font-size:0.9rem; color:#718096;">${infoDias}</td>
-                                    <td style="padding:10px; text-align:center;">
-                                        <select onchange="cambiarEstadoUsuarioDirecto(${u.id}, this.value)" style="padding:5px 8px; border-radius:6px; border:1.5px solid #cbd5e0; font-weight:700; cursor:pointer; font-size:0.9rem;">
-                                            <option value="" disabled selected>Cambiar a...</option>
-                                            <option value="activo" ${u.estado === 'activo' ? 'disabled' : ''}>🟢 Activar (Pagado)</option>
-                                            <option value="prueba" ${u.estado === 'prueba' ? 'disabled' : ''}>🟠 Modo Prueba</option>
-                                            <option value="suspendido" ${u.estado === 'suspendido' ? 'disabled' : ''}>🔴 Suspender</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="6" style="padding:15px; text-align:center; color:#718096;">No hay usuarios registrados en el sistema.</td></tr>';
-                    }
-
-                    if (data.ranking && data.ranking.length > 0) {
-                        let htmlRank = "<ol style='margin:0; padding-left:20px; line-height:1.6;'>";
-                        data.ranking.forEach(r => {
-                            htmlRank += `<li style='margin-bottom:4px;'><b>${r.componente_clickeado}</b>: ${r.total} clics</li>`;
-                        });
-                        htmlRank += "</ol>";
-                        boxRank.innerHTML = htmlRank;
-                    } else {
-                        boxRank.innerHTML = "<p style='color:#718096; margin:0;'>Sin consultas registradas aún.</p>";
-                    }
-
-                    if (data.ultimos && data.ultimos.length > 0) {
-                        let htmlEventos = "<ul style='margin:0; padding-left:18px; line-height:1.7;'>";
-                        data.ultimos.forEach(e => {
-                            let tiempo = e.fecha_hora ? e.fecha_hora : '';
-                            htmlEventos += `<li style='margin-bottom:4px;'><span style='color:#718096; font-size:0.85rem;'>[${tiempo}]</span> <b>${e.usuario}</b>: ${e.componente_clickeado}</li>`;
-                        });
-                        htmlEventos += "</ul>";
-                        boxEventos.innerHTML = htmlEventos;
-                    } else {
-                        boxEventos.innerHTML = "<p style='color:#718096; margin:0;'>Sin actividad reciente.</p>";
-                    }
-
-                } catch(err) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:#e53e3e;">❌ Error de conexión al consultar telemetría.</td></tr>`;
-                    boxRank.textContent = "Error al obtener ranking.";
-                    boxEventos.textContent = "Error al obtener eventos.";
-                }
-            }
-
-            window.cambiarEstadoUsuarioDirecto = async function(userId, nuevoEstado) {
-                if (!nuevoEstado) return;
-                try {
-                    const formData = new URLSearchParams();
-                    formData.append('user_id', userId);
-                    formData.append('estado', nuevoEstado);
-
-                    const res = await fetch(`${window.URL_BASE_SISTEMA}?ruta=/admin/cambiar_estado`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formData.toString()
-                    });
-                    const d = await res.json();
-                    if (d.status === 'ok') {
-                        lanzarToast(`✅ Cuenta #${userId} cambiada a ${nuevoEstado.toUpperCase()}`);
-                        await cargarDatosConsolaAdmin();
-                    } else {
-                        alert("⚠️ No se pudo actualizar: " + (d.message || "Error desconocido"));
-                        await cargarDatosConsolaAdmin();
-                    }
-                } catch(e) {
-                    alert("❌ Error de red al intentar cambiar el estado");
-                }
-            };
-
-            if (linkAdmin && modalAdmin) {
-                linkAdmin.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    modalAdmin.classList.add('show');
-                    cargarDatosConsolaAdmin();
-                });
-            }
-            if (btnCerrarAdmin && modalAdmin) {
-                btnCerrarAdmin.addEventListener('click', () => modalAdmin.classList.remove('show'));
-            }
-
-            const btnCerrarSesion = document.getElementById('btnCerrarSesion');
-            if (btnCerrarSesion) {
-                btnCerrarSesion.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    localStorage.removeItem('usuario');
-                    localStorage.removeItem('usuario_mobile');
-                    sessionStorage.removeItem('usuario');
-                    window.location.href = '../index.html';
-                });
-            }
-        });
-    </script>
     <script src="./js/dashboard.js"></script>
 </body>
 </html>
